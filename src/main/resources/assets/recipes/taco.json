@@ -1,0 +1,20 @@
+{
+    "type": "crafting_shaped",
+    "pattern": [
+        " # ",
+        "#CO",
+        "CCC"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:cooked_beef"
+        },
+        "O": {
+            "item": "minecraft:oak_leaves"
+        },
+        "C": {
+            "item": "simplecorn:corncob"
+        }
+    },
+    "result": {}
+}
