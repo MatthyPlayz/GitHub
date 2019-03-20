@@ -1,0 +1,11 @@
+[{
+  "modid": "inbcraft",
+  "name": "Inbcraft",
+  "description": "Inbcraft is a mod with alot of completely random things.",
+  "version": "1.0.0.0",
+  "mcversion": "1.12",
+  "url": "minecraftforge.net/",
+  "updateJSON": "minecraftforge.net/versions.json",
+  "authorList": ["GleamzICN (MatthyPlayz)"],
+  "credits": "The minecraft modding community."
+}]

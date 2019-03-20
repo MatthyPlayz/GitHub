@@ -1,0 +1,67 @@
+Symbol range map extraction starting
+Processing 2 files
+startProcessing "com\matthyfamily\Inbcraft.java" md5: 42ee4cd2e46b0c96164c5ab55c6235e7
+@|com\matthyfamily\Inbcraft.java|8|24|com.matthyfamily|package|com.matthyfamily|(file)
+Class Start: com.matthyfamily.Inbcraft
+   @|com\matthyfamily\Inbcraft.java|337|340|Mod|class|net.minecraftforge.fml.common.Mod
+   @|com\matthyfamily\Inbcraft.java|341|346|modid|method|net.minecraftforge.fml.common.Mod|modid|()Ljava/lang/String;
+   @|com\matthyfamily\Inbcraft.java|349|357|Inbcraft|class|com.matthyfamily.Inbcraft
+   @|com\matthyfamily\Inbcraft.java|358|363|MODID|field|com.matthyfamily.Inbcraft|MODID
+   @|com\matthyfamily\Inbcraft.java|365|369|name|method|net.minecraftforge.fml.common.Mod|name|()Ljava/lang/String;
+   @|com\matthyfamily\Inbcraft.java|372|380|Inbcraft|class|com.matthyfamily.Inbcraft
+   @|com\matthyfamily\Inbcraft.java|381|385|NAME|field|com.matthyfamily.Inbcraft|NAME
+   @|com\matthyfamily\Inbcraft.java|387|394|version|method|net.minecraftforge.fml.common.Mod|version|()Ljava/lang/String;
+   @|com\matthyfamily\Inbcraft.java|397|405|Inbcraft|class|com.matthyfamily.Inbcraft
+   @|com\matthyfamily\Inbcraft.java|406|413|VERSION|field|com.matthyfamily.Inbcraft|VERSION
+   @|com\matthyfamily\Inbcraft.java|428|436|Inbcraft|class|com.matthyfamily.Inbcraft
+   @|com\matthyfamily\Inbcraft.java|463|469|String|class|java.lang.String
+   @|com\matthyfamily\Inbcraft.java|463|469|String|class|java.lang.String
+   @|com\matthyfamily\Inbcraft.java|470|475|MODID|field|com.matthyfamily.Inbcraft|MODID|
+   @|com\matthyfamily\Inbcraft.java|514|520|String|class|java.lang.String
+   @|com\matthyfamily\Inbcraft.java|514|520|String|class|java.lang.String
+   @|com\matthyfamily\Inbcraft.java|521|525|NAME|field|com.matthyfamily.Inbcraft|NAME|
+   @|com\matthyfamily\Inbcraft.java|564|570|String|class|java.lang.String
+   @|com\matthyfamily\Inbcraft.java|564|570|String|class|java.lang.String
+   @|com\matthyfamily\Inbcraft.java|571|578|VERSION|field|com.matthyfamily.Inbcraft|VERSION|
+   @|com\matthyfamily\Inbcraft.java|608|614|Logger|class|org.apache.logging.log4j.Logger
+   @|com\matthyfamily\Inbcraft.java|608|614|Logger|class|org.apache.logging.log4j.Logger
+   @|com\matthyfamily\Inbcraft.java|615|621|logger|field|com.matthyfamily.Inbcraft|logger|
+   Method Start: preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+      @|com\matthyfamily\Inbcraft.java|692|697|event|param|com.matthyfamily.Inbcraft|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
+      @|com\matthyfamily\Inbcraft.java|629|641|EventHandler|class|net.minecraftforge.fml.common.Mod.EventHandler
+      @|com\matthyfamily\Inbcraft.java|658|665|preInit|method|com.matthyfamily.Inbcraft|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+      @|com\matthyfamily\Inbcraft.java|666|691|FMLPreInitializationEvent|class|net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+      @|com\matthyfamily\Inbcraft.java|713|719|logger|field|com.matthyfamily.Inbcraft|logger
+      @|com\matthyfamily\Inbcraft.java|722|727|event|param|com.matthyfamily.Inbcraft|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
+      @|com\matthyfamily\Inbcraft.java|728|737|getModLog|method|net.minecraftforge.fml.common.event.FMLPreInitializationEvent|getModLog|()Lorg/apache/logging/log4j/Logger;
+   Method End: preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+   Method Start: init(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+      @|com\matthyfamily\Inbcraft.java|810|815|event|param|com.matthyfamily.Inbcraft|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V|event|0
+      @|com\matthyfamily\Inbcraft.java|753|765|EventHandler|class|net.minecraftforge.fml.common.Mod.EventHandler
+      @|com\matthyfamily\Inbcraft.java|782|786|init|method|com.matthyfamily.Inbcraft|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+      @|com\matthyfamily\Inbcraft.java|787|809|FMLInitializationEvent|class|net.minecraftforge.fml.common.event.FMLInitializationEvent
+      @|com\matthyfamily\Inbcraft.java|831|837|logger|field|com.matthyfamily.Inbcraft|logger
+      @|com\matthyfamily\Inbcraft.java|838|842|info|method|org.apache.logging.log4j.Logger|info|(Ljava/lang/String;)V
+   Method End: init(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+Class End  : com.matthyfamily.Inbcraft
+endProcessing "com\matthyfamily\Inbcraft.java"
+
+startProcessing "com\matthyfamily\Reference.java" md5: ae847cbf4b836541d027e8ee0333a548
+@|com\matthyfamily\Reference.java|8|24|com.matthyfamily|package|com.matthyfamily|(file)
+Class Start: com.matthyfamily.Reference
+   @|com\matthyfamily\Reference.java|40|49|Reference|class|com.matthyfamily.Reference
+   @|com\matthyfamily\Reference.java|73|79|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|73|79|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|80|85|MODID|field|com.matthyfamily.Reference|MODID|
+   @|com\matthyfamily\Reference.java|116|122|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|116|122|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|123|130|MODNAME|field|com.matthyfamily.Reference|MODNAME|
+   @|com\matthyfamily\Reference.java|186|192|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|186|192|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|193|200|VERSION|field|com.matthyfamily.Reference|VERSION|
+   @|com\matthyfamily\Reference.java|231|237|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|231|237|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|238|265|ACCEPTED_MINECRAFT_VERSIONS|field|com.matthyfamily.Reference|ACCEPTED_MINECRAFT_VERSIONS|
+Class End  : com.matthyfamily.Reference
+endProcessing "com\matthyfamily\Reference.java"
+
