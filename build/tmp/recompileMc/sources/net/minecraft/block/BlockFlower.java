@@ -17,6 +17,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class BlockFlower extends BlockBush
 {
@@ -27,6 +29,10 @@ public abstract class BlockFlower extends BlockBush
         this.setDefaultState(this.blockState.getBaseState().withProperty(this.getTypeProperty(), this.getBlockType() == BlockFlower.EnumFlowerColor.RED ? BlockFlower.EnumFlowerType.POPPY : BlockFlower.EnumFlowerType.DANDELION));
     }
 
+    /**
+     * @deprecated call via {@link IBlockState#getBoundingBox(IBlockAccess,BlockPos)} whenever possible.
+     * Implementing/overriding is fine.
+     */
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
         return super.getBoundingBox(state, source, pos).offset(state.getOffset(source, pos));
@@ -130,7 +136,7 @@ public abstract class BlockFlower extends BlockBush
         private final BlockFlower.EnumFlowerColor blockType;
         private final int meta;
         private final String name;
-        private final String unlocalizedName;
+        private final String translationKey;
 
         private EnumFlowerType(BlockFlower.EnumFlowerColor blockType, int meta, String name)
         {
@@ -142,7 +148,7 @@ public abstract class BlockFlower extends BlockBush
             this.blockType = blockType;
             this.meta = meta;
             this.name = name;
-            this.unlocalizedName = unlocalizedName;
+            this.translationKey = unlocalizedName;
         }
 
         public BlockFlower.EnumFlowerColor getBlockType()
@@ -188,9 +194,9 @@ public abstract class BlockFlower extends BlockBush
             return this.name;
         }
 
-        public String getUnlocalizedName()
+        public String getTranslationKey()
         {
-            return this.unlocalizedName;
+            return this.translationKey;
         }
 
         static

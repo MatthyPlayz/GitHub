@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,7 +71,7 @@ public class CapabilityFluidHandler
         @Override
 		public void readNBT(Capability<T> capability, T instance, EnumFacing side, NBTBase nbt)
 		{
-			if (!(instance instanceof FluidTank))
+			if (!(instance instanceof IFluidTank))
 				throw new RuntimeException("IFluidHandler instance is not instance of FluidTank");
 			NBTTagCompound tags = (NBTTagCompound) nbt;
 			FluidTank tank = (FluidTank) instance;

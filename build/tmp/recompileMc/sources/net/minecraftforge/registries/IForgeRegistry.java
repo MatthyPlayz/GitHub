@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,6 @@
 
 package net.minecraftforge.registries;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -36,7 +35,7 @@ import javax.annotation.Nullable;
  */
 public interface IForgeRegistry<V extends IForgeRegistryEntry<V>> extends Iterable<V>
 {
-    Class<V> getRegistrySuperType();
+    public Class<V> getRegistrySuperType();
 
     void register(V value);
 
@@ -49,13 +48,7 @@ public interface IForgeRegistry<V extends IForgeRegistryEntry<V>> extends Iterab
     @Nullable ResourceLocation getKey(V value);
 
     @Nonnull Set<ResourceLocation>           getKeys();
-    /** @deprecated use {@link #getValuesCollection} */
-    @Deprecated // TODO: remove in 1.13
     @Nonnull List<V>                         getValues();
-    @Nonnull
-    default Collection<V>                    getValuesCollection() { // TODO rename this to getValues in 1.13
-        return getValues();
-    }
     @Nonnull Set<Entry<ResourceLocation, V>> getEntries();
 
     /**
@@ -95,26 +88,10 @@ public interface IForgeRegistry<V extends IForgeRegistryEntry<V>> extends Iterab
     }
 
     /**
-     * Callback fired when the registry contents are validated.
-     */
-    interface ValidateCallback<V extends IForgeRegistryEntry<V>>
-    {
-        void onValidate(IForgeRegistryInternal<V> owner, RegistryManager stage, int id, ResourceLocation key, V obj);
-    }
-
-    /**
      * Factory for creating dummy entries, allowing worlds to be loaded and keep the missing block references.
      */
     interface DummyFactory<V extends IForgeRegistryEntry<V>>
     {
         V createDummy(ResourceLocation key);
-    }
-
-    /**
-     *
-     */
-    interface MissingFactory<V extends IForgeRegistryEntry<V>>
-    {
-        V createMissing(ResourceLocation key, boolean isNetwork);
     }
 }

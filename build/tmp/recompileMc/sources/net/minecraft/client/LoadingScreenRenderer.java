@@ -199,7 +199,7 @@ public class LoadingScreenRenderer implements IProgressUpdate
                 }
                 catch (java.io.IOException e)
                 {
-                    throw new RuntimeException(e);
+                    com.google.common.base.Throwables.propagate(e);
                 } //FML End
                 this.framebuffer.unbindFramebuffer();
 

@@ -530,7 +530,6 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
 
     public void plantFlower(World world, Random rand, BlockPos pos)
     {
-        if (flowers.isEmpty()) return;
         FlowerEntry flower = (FlowerEntry)WeightedRandom.getRandomItem(rand, flowers);
         if (flower == null || flower.state == null ||
             (flower.state.getBlock() instanceof net.minecraft.block.BlockBush &&
@@ -705,6 +704,7 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
             public Class <? extends EntityLiving > entityClass;
             public int minGroupCount;
             public int maxGroupCount;
+            private final java.lang.reflect.Constructor<?> ctr;
 
             public SpawnListEntry(Class <? extends EntityLiving > entityclassIn, int weight, int groupCountMin, int groupCountMax)
             {
@@ -712,6 +712,17 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
                 this.entityClass = entityclassIn;
                 this.minGroupCount = groupCountMin;
                 this.maxGroupCount = groupCountMax;
+
+                java.lang.reflect.Constructor<?> tmp = null;
+                try
+                {
+                    tmp = entityclassIn.getConstructor(World.class);
+                }
+                catch (NoSuchMethodException e)
+                {
+                    com.google.common.base.Throwables.propagate(e);
+                }
+                ctr = tmp;
             }
 
             public String toString()
@@ -721,9 +732,7 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
 
             public EntityLiving newInstance(World world) throws Exception
             {
-                net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(this.entityClass);
-                if (entry != null) return (EntityLiving) entry.newInstance(world);
-                return this.entityClass.getConstructor(World.class).newInstance(world);
+                return (EntityLiving)ctr.newInstance(world);
             }
         }
 

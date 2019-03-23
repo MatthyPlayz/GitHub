@@ -33,7 +33,6 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.minecraft.advancements.AdvancementManager;
@@ -166,7 +165,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     private long nanoTimeSinceStatusRefresh;
     public final Queue < FutureTask<? >> futureTaskQueue = Queues. < FutureTask<? >> newArrayDeque();
     private Thread serverThread;
-    protected long currentTime = getCurrentTimeMillis();
+    private long currentTime = getCurrentTimeMillis();
     @SideOnly(Side.CLIENT)
     private boolean worldIconSet;
 
@@ -528,8 +527,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         {
             this.usageSnooper.stopSnooper();
         }
-
-        CommandBase.setCommandListener(null); // Forge: fix MC-128561
     }
 
     public boolean isServerRunning()
@@ -555,7 +552,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 this.currentTime = getCurrentTimeMillis();
                 long i = 0L;
                 this.statusResponse.setServerDescription(new TextComponentString(this.motd));
-                this.statusResponse.setVersion(new ServerStatusResponse.Version("1.12.2", 340));
+                this.statusResponse.setVersion(new ServerStatusResponse.Version("1.12", 335));
                 this.applyServerIconToResponse(this.statusResponse);
 
                 while (this.serverRunning)
@@ -643,6 +640,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             try
             {
                 this.stopServer();
+                this.serverStopped = true;
             }
             catch (Throwable throwable)
             {
@@ -678,7 +676,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 ImageIO.write(bufferedimage, "PNG", new ByteBufOutputStream(bytebuf));
                 ByteBuf bytebuf1 = Base64.encode(bytebuf);
                 response.setFavicon("data:image/png;base64," + bytebuf1.toString(StandardCharsets.UTF_8));
-                bytebuf1.release(); // Forge: fix MC-122085
             }
             catch (Exception exception)
             {
@@ -811,10 +808,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             if (id == 0 || this.getAllowNether())
             {
                 WorldServer worldserver = net.minecraftforge.common.DimensionManager.getWorld(id);
-                this.profiler.func_194340_a(() ->
-                {
-                    return worldserver.getWorldInfo().getWorldName();
-                });
+                this.profiler.startSection(worldserver.getWorldInfo().getWorldName());
 
                 if (this.tickCounter % 20 == 0)
                 {
@@ -910,7 +904,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public WorldServer getWorld(int dimension)
     {
-        WorldServer ret = net.minecraftforge.common.DimensionManager.getWorld(dimension, true);
+        WorldServer ret = net.minecraftforge.common.DimensionManager.getWorld(dimension);
         if (ret == null)
         {
             net.minecraftforge.common.DimensionManager.initDimension(dimension);
@@ -924,7 +918,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public String getMinecraftVersion()
     {
-        return "1.12.2";
+        return "1.12";
     }
 
     /**
@@ -1046,7 +1040,39 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     }
 
     /**
-     * Get the name of this object. For players this returns their username
+     * Gets the name of this thing. This method has slightly different behavior depending on the interface (for <a
+     * href="https://github.com/ModCoderPack/MCPBot-Issues/issues/14">technical reasons</a> the same method is used for
+     * both IWorldNameable and ICommandSender):
+     *  
+     * <dl>
+     * <dt>{@link net.minecraft.util.INameable#getName() INameable.getName()}</dt>
+     * <dd>Returns the name of this inventory. If this {@linkplain net.minecraft.inventory#hasCustomName() has a custom
+     * name} then this <em>should</em> be a direct string; otherwise it <em>should</em> be a valid translation
+     * string.</dd>
+     * <dd>However, note that <strong>the translation string may be invalid</strong>, as is the case for {@link
+     * net.minecraft.tileentity.TileEntityBanner TileEntityBanner} (always returns nonexistent translation code
+     * <code>banner</code> without a custom name), {@link net.minecraft.block.BlockAnvil.Anvil BlockAnvil$Anvil} (always
+     * returns <code>anvil</code>), {@link net.minecraft.block.BlockWorkbench.InterfaceCraftingTable
+     * BlockWorkbench$InterfaceCraftingTable} (always returns <code>crafting_table</code>), {@link
+     * net.minecraft.inventory.InventoryCraftResult InventoryCraftResult} (always returns <code>Result</code>) and the
+     * {@link net.minecraft.entity.item.EntityMinecart EntityMinecart} family (uses the entity definition). This is not
+     * an exaustive list.</dd>
+     * <dd>In general, this method should be safe to use on tile entities that implement IInventory.</dd>
+     * <dt>{@link net.minecraft.command.ICommandSender#getName() ICommandSender.getName()} and {@link
+     * net.minecraft.entity.Entity#getName() Entity.getName()}</dt>
+     * <dd>Returns a valid, displayable name (which may be localized). For most entities, this is the translated version
+     * of its translation string (obtained via {@link net.minecraft.entity.EntityList#getEntityString
+     * EntityList.getEntityString}).</dd>
+     * <dd>If this entity has a custom name set, this will return that name.</dd>
+     * <dd>For some entities, this will attempt to translate a nonexistent translation string; see <a
+     * href="https://bugs.mojang.com/browse/MC-68446">MC-68446</a>. For {@linkplain
+     * net.minecraft.entity.player.EntityPlayer#getName() players} this returns the player's name. For {@linkplain
+     * net.minecraft.entity.passive.EntityOcelot ocelots} this may return the translation of
+     * <code>entity.Cat.name</code> if it is tamed. For {@linkplain net.minecraft.entity.item.EntityItem#getName() item
+     * entities}, this will attempt to return the name of the item in that item entity. In all cases other than players,
+     * the custom name will overrule this.</dd>
+     * <dd>For non-entity command senders, this will return some arbitrary name, such as "Rcon" or "Server".</dd>
+     * </dl>
      */
     public String getName()
     {
@@ -1132,24 +1158,24 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
     public void setDifficultyForAllWorlds(EnumDifficulty difficulty)
     {
-        for (WorldServer worldserver1 : this.worlds)
+        for (WorldServer worldserver : this.worlds)
         {
-            if (worldserver1 != null)
+            if (worldserver != null)
             {
-                if (worldserver1.getWorldInfo().isHardcoreModeEnabled())
+                if (worldserver.getWorldInfo().isHardcoreModeEnabled())
                 {
-                    worldserver1.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
-                    worldserver1.setAllowedSpawnTypes(true, true);
+                    worldserver.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
+                    worldserver.setAllowedSpawnTypes(true, true);
                 }
                 else if (this.isSinglePlayer())
                 {
-                    worldserver1.getWorldInfo().setDifficulty(difficulty);
-                    worldserver1.setAllowedSpawnTypes(worldserver1.getDifficulty() != EnumDifficulty.PEACEFUL, true);
+                    worldserver.getWorldInfo().setDifficulty(difficulty);
+                    worldserver.setAllowedSpawnTypes(worldserver.getDifficulty() != EnumDifficulty.PEACEFUL, true);
                 }
                 else
                 {
-                    worldserver1.getWorldInfo().setDifficulty(difficulty);
-                    worldserver1.setAllowedSpawnTypes(this.allowSpawnMonsters(), this.canSpawnAnimals);
+                    worldserver.getWorldInfo().setDifficulty(difficulty);
+                    worldserver.setAllowedSpawnTypes(this.allowSpawnMonsters(), this.canSpawnAnimals);
                 }
             }
         }
@@ -1218,29 +1244,29 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         playerSnooper.addClientStat("gui_state", this.getGuiEnabled() ? "enabled" : "disabled");
         playerSnooper.addClientStat("run_time", Long.valueOf((getCurrentTimeMillis() - playerSnooper.getMinecraftStartTimeMillis()) / 60L * 1000L));
         playerSnooper.addClientStat("avg_tick_ms", Integer.valueOf((int)(MathHelper.average(this.tickTimeArray) * 1.0E-6D)));
-        int l = 0;
+        int i = 0;
 
         if (this.worlds != null)
         {
-            for (WorldServer worldserver1 : this.worlds)
+            for (WorldServer worldserver : this.worlds)
             {
-                if (worldserver1 != null)
+                if (worldserver != null)
                 {
-                    WorldInfo worldinfo = worldserver1.getWorldInfo();
-                    playerSnooper.addClientStat("world[" + l + "][dimension]", Integer.valueOf(worldserver1.provider.getDimensionType().getId()));
-                    playerSnooper.addClientStat("world[" + l + "][mode]", worldinfo.getGameType());
-                    playerSnooper.addClientStat("world[" + l + "][difficulty]", worldserver1.getDifficulty());
-                    playerSnooper.addClientStat("world[" + l + "][hardcore]", Boolean.valueOf(worldinfo.isHardcoreModeEnabled()));
-                    playerSnooper.addClientStat("world[" + l + "][generator_name]", worldinfo.getTerrainType().getName());
-                    playerSnooper.addClientStat("world[" + l + "][generator_version]", Integer.valueOf(worldinfo.getTerrainType().getVersion()));
-                    playerSnooper.addClientStat("world[" + l + "][height]", Integer.valueOf(this.buildLimit));
-                    playerSnooper.addClientStat("world[" + l + "][chunks_loaded]", Integer.valueOf(worldserver1.getChunkProvider().getLoadedChunkCount()));
-                    ++l;
+                    WorldInfo worldinfo = worldserver.getWorldInfo();
+                    playerSnooper.addClientStat("world[" + i + "][dimension]", Integer.valueOf(worldserver.provider.getDimensionType().getId()));
+                    playerSnooper.addClientStat("world[" + i + "][mode]", worldinfo.getGameType());
+                    playerSnooper.addClientStat("world[" + i + "][difficulty]", worldserver.getDifficulty());
+                    playerSnooper.addClientStat("world[" + i + "][hardcore]", Boolean.valueOf(worldinfo.isHardcoreModeEnabled()));
+                    playerSnooper.addClientStat("world[" + i + "][generator_name]", worldinfo.getTerrainType().getName());
+                    playerSnooper.addClientStat("world[" + i + "][generator_version]", Integer.valueOf(worldinfo.getTerrainType().getVersion()));
+                    playerSnooper.addClientStat("world[" + i + "][height]", Integer.valueOf(this.buildLimit));
+                    playerSnooper.addClientStat("world[" + i + "][chunks_loaded]", Integer.valueOf(worldserver.getChunkProvider().getLoadedChunkCount()));
+                    ++i;
                 }
             }
         }
 
-        playerSnooper.addClientStat("worlds", Integer.valueOf(l));
+        playerSnooper.addClientStat("worlds", Integer.valueOf(i));
     }
 
     public void addServerTypeToSnooper(Snooper playerSnooper)
@@ -1367,9 +1393,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public void setGameType(GameType gameMode)
     {
-        for (WorldServer worldserver1 : this.worlds)
+        for (WorldServer worldserver : this.worlds)
         {
-            worldserver1.getWorldInfo().setGameType(gameMode);
+            worldserver.getWorldInfo().setGameType(gameMode);
         }
     }
 
@@ -1480,11 +1506,11 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     @Nullable
     public Entity getEntityFromUuid(UUID uuid)
     {
-        for (WorldServer worldserver1 : this.worlds)
+        for (WorldServer worldserver : this.worlds)
         {
-            if (worldserver1 != null)
+            if (worldserver != null)
             {
-                Entity entity = worldserver1.getEntityFromUuid(uuid);
+                Entity entity = worldserver.getEntityFromUuid(uuid);
 
                 if (entity != null)
                 {
@@ -1618,16 +1644,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     @SideOnly(Side.SERVER)
     public static void main(String[] p_main_0_)
     {
-        //Forge: Copied from DedicatedServer.init as to run as early as possible, Old code left in place intentionally.
-        //Done in good faith with permission: https://github.com/MinecraftForge/MinecraftForge/issues/3659#issuecomment-390467028
-        ServerEula eula = new ServerEula(new File("eula.txt"));
-        if (!eula.hasAcceptedEULA())
-        {
-            LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
-            eula.createEULAFile();
-            return;
-        }
-
         Bootstrap.register();
 
         try
@@ -1638,12 +1654,12 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             String s2 = null;
             boolean flag1 = false;
             boolean flag2 = false;
-            int l = -1;
+            int i = -1;
 
-            for (int i1 = 0; i1 < p_main_0_.length; ++i1)
+            for (int j = 0; j < p_main_0_.length; ++j)
             {
-                String s3 = p_main_0_[i1];
-                String s4 = i1 == p_main_0_.length - 1 ? null : p_main_0_[i1 + 1];
+                String s3 = p_main_0_[j];
+                String s4 = j == p_main_0_.length - 1 ? null : p_main_0_[j + 1];
                 boolean flag3 = false;
 
                 if (!"nogui".equals(s3) && !"--nogui".equals(s3))
@@ -1654,7 +1670,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
                         try
                         {
-                            l = Integer.parseInt(s4);
+                            i = Integer.parseInt(s4);
                         }
                         catch (NumberFormatException var13)
                         {
@@ -1692,7 +1708,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
                 if (flag3)
                 {
-                    ++i1;
+                    ++j;
                 }
             }
 
@@ -1712,9 +1728,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 dedicatedserver.setFolderName(s2);
             }
 
-            if (l >= 0)
+            if (i >= 0)
             {
-                dedicatedserver.setServerPort(l);
+                dedicatedserver.setServerPort(i);
             }
 
             if (flag1)

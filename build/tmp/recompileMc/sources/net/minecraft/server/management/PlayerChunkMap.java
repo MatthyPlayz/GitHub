@@ -49,7 +49,7 @@ public class PlayerChunkMap
     private final List<PlayerChunkMapEntry> entriesWithoutChunks = Lists.<PlayerChunkMapEntry>newLinkedList();
     /** This field is using when chunk should be processed (every 8000 ticks) */
     private final List<PlayerChunkMapEntry> entries = Lists.<PlayerChunkMapEntry>newArrayList();
-    /** Number of chunks the server sends to the client. Valid 3<=x<=15. In server.properties. */
+    /** Player view distance, in chunks. */
     private int playerViewRadius;
     /** time what is using to check if InhabitedTime should be calculated */
     private long previousTotalWorldTime;
@@ -403,6 +403,11 @@ public class PlayerChunkMap
         return playerchunkmapentry != null && playerchunkmapentry.containsPlayer(player) && playerchunkmapentry.isSentToPlayers();
     }
 
+    /**
+     * Called when the server's view distance changes, sending or rescinding chunks as needed.
+     *  
+     * @param radius Radius in chunks
+     */
     public void setPlayerViewRadius(int radius)
     {
         radius = MathHelper.clamp(radius, 3, 32);
@@ -458,16 +463,18 @@ public class PlayerChunkMap
     }
 
     /**
-     * Get the furthest viewable block given player's view distance
+     * Gets the max entity track distance (in blocks) for the given view distance.
+     *  
+     * @param distance The view distance in chunks
      */
     public static int getFurthestViewableBlock(int distance)
     {
         return distance * 16 - 16;
     }
 
-    private static long getIndex(int p_187307_0_, int p_187307_1_)
+    private static long getIndex(int chunkX, int chunkZ)
     {
-        return (long)p_187307_0_ + 2147483647L | (long)p_187307_1_ + 2147483647L << 32;
+        return (long)chunkX + 2147483647L | (long)chunkZ + 2147483647L << 32;
     }
 
     /**

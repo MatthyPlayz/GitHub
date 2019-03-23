@@ -41,7 +41,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Chunk implements net.minecraftforge.common.capabilities.ICapabilityProvider
+public class Chunk
 {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ExtendedBlockStorage NULL_BLOCK_STORAGE = null;
@@ -112,7 +112,6 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
 
         Arrays.fill(this.precipitationHeightMap, -999);
         Arrays.fill(this.blockBiomeArray, (byte) - 1);
-        capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
     }
 
     public Chunk(World worldIn, ChunkPrimer primer, int x, int z)
@@ -333,14 +332,14 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
 
                         for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
                         {
-                            j1 = Math.min(j1, this.world.getChunksLowestHorizon(l + enumfacing.getFrontOffsetX(), i1 + enumfacing.getFrontOffsetZ()));
+                            j1 = Math.min(j1, this.world.getChunksLowestHorizon(l + enumfacing.getXOffset(), i1 + enumfacing.getZOffset()));
                         }
 
                         this.checkSkylightNeighborHeight(l, i1, j1);
 
                         for (EnumFacing enumfacing1 : EnumFacing.Plane.HORIZONTAL)
                         {
-                            this.checkSkylightNeighborHeight(l + enumfacing1.getFrontOffsetX(), i1 + enumfacing1.getFrontOffsetZ(), k);
+                            this.checkSkylightNeighborHeight(l + enumfacing1.getXOffset(), i1 + enumfacing1.getZOffset(), k);
                         }
 
                         if (onlyOne)
@@ -489,7 +488,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
             {
                 for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
                 {
-                    this.updateSkylightNeighborHeight(k + enumfacing.getFrontOffsetX(), l + enumfacing.getFrontOffsetZ(), j2, k2);
+                    this.updateSkylightNeighborHeight(k + enumfacing.getXOffset(), l + enumfacing.getZOffset(), j2, k2);
                 }
 
                 this.updateSkylightNeighborHeight(k, l, j2, k2);
@@ -793,7 +792,6 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         entityIn.chunkCoordY = k;
         entityIn.chunkCoordZ = this.z;
         this.entityLists[k].add(entityIn);
-        this.markDirty(); // Forge - ensure chunks are marked to save after an entity add
     }
 
     /**
@@ -820,7 +818,6 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         }
 
         this.entityLists[index].remove(entityIn);
-        this.markDirty(); // Forge - ensure chunks are marked to save after entity removals
     }
 
     public boolean canSeeSky(BlockPos pos)
@@ -840,7 +837,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
     }
 
     @Nullable
-    public TileEntity getTileEntity(BlockPos pos, Chunk.EnumCreateEntityType p_177424_2_)
+    public TileEntity getTileEntity(BlockPos pos, Chunk.EnumCreateEntityType creationMode)
     {
         TileEntity tileentity = this.tileEntities.get(pos);
 
@@ -852,12 +849,12 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
 
         if (tileentity == null)
         {
-            if (p_177424_2_ == Chunk.EnumCreateEntityType.IMMEDIATE)
+            if (creationMode == Chunk.EnumCreateEntityType.IMMEDIATE)
             {
                 tileentity = this.createNewTileEntity(pos);
                 this.world.setTileEntity(pos, tileentity);
             }
-            else if (p_177424_2_ == Chunk.EnumCreateEntityType.QUEUED)
+            else if (creationMode == Chunk.EnumCreateEntityType.QUEUED)
             {
                 this.tileEntityPosQueue.add(pos.toImmutable());
             }
@@ -927,7 +924,6 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
      */
     public void onUnload()
     {
-        java.util.Arrays.stream(entityLists).forEach(multimap -> com.google.common.collect.Lists.newArrayList(multimap.getByClass(net.minecraft.entity.player.EntityPlayer.class)).forEach(player -> world.updateEntityWithOptionalForce(player, false))); // FORGE - Fix for MC-92916
         this.loaded = false;
 
         for (TileEntity tileentity : this.tileEntities.values())
@@ -1078,9 +1074,8 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
 
     protected void populate(IChunkGenerator generator)
     {
-        if (populating != null && net.minecraftforge.common.ForgeModContainer.logCascadingWorldGeneration) logCascadingWorldGeneration();
-        ChunkPos prev = populating;
-        populating = this.getPos();
+        if (populating && net.minecraftforge.common.ForgeModContainer.logCascadingWorldGeneration) logCascadingWorldGeneration();
+        populating = true;
         if (this.isTerrainPopulated())
         {
             if (generator.generateStructures(this, this.x, this.z))
@@ -1095,7 +1090,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
             net.minecraftforge.fml.common.registry.GameRegistry.generateWorld(this.x, this.z, this.world, generator, this.world.getChunkProvider());
             this.markDirty();
         }
-        populating = prev;
+        populating = false;
     }
 
     public BlockPos getPrecipitationHeight(BlockPos pos)
@@ -1418,7 +1413,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
                     for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
                     {
                         int k = enumfacing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE ? 16 : 1;
-                        this.world.getChunkFromBlockCoords(blockpos.offset(enumfacing, k)).checkLightSide(enumfacing.getOpposite());
+                        this.world.getChunk(blockpos.offset(enumfacing, k)).checkLightSide(enumfacing.getOpposite());
                     }
 
                     this.setSkylightUpdated();
@@ -1546,7 +1541,6 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         else
         {
             System.arraycopy(newHeightMap, 0, this.heightMap, 0, this.heightMap.length);
-            this.heightMapMinimum = com.google.common.primitives.Ints.min(this.heightMap); // Forge: fix MC-117412
         }
     }
 
@@ -1634,37 +1628,16 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         }
     }
 
-    private static ChunkPos populating = null; // keep track of cascading chunk generation during chunk population
+    private static boolean populating = false; // keep track of cascading chunk generation during chunk population
 
     private void logCascadingWorldGeneration()
     {
         net.minecraftforge.fml.common.ModContainer activeModContainer = net.minecraftforge.fml.common.Loader.instance().activeModContainer();
-        String format = "{} loaded a new chunk {} in dimension {} ({}) while populating chunk {}, causing cascading worldgen lag.";
+        String format = "{} loaded a new chunk ({}, {}  Dimension: {}) during chunk population, causing cascading worldgen lag. Please report this to the mod's issue tracker. This log can be disabled in the Forge config.";
 
-        if (activeModContainer == null) { // vanilla minecraft has problems too (MC-114332), log it at a quieter level.
-            net.minecraftforge.fml.common.FMLLog.log.debug(format, "Minecraft", this.getPos(), this.world.provider.getDimension(), this.world.provider.getDimensionType().getName(), populating);
-            net.minecraftforge.fml.common.FMLLog.log.debug("Consider setting 'fixVanillaCascading' to 'true' in the Forge config to fix many cases where this occurs in the base game.");
-        } else {
-            net.minecraftforge.fml.common.FMLLog.log.warn(format, activeModContainer.getName(), this.getPos(), this.world.provider.getDimension(), this.world.provider.getDimensionType().getName(), populating);
-            net.minecraftforge.fml.common.FMLLog.log.warn("Please report this to the mod's issue tracker. This log can be disabled in the Forge config.");
-        }
-    }
-
-    private final net.minecraftforge.common.capabilities.CapabilityDispatcher capabilities;
-    @Nullable
-    public net.minecraftforge.common.capabilities.CapabilityDispatcher getCapabilities()
-    {
-        return capabilities;
-    }
-    @Override
-    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable EnumFacing facing)
-    {
-        return capabilities == null ? false : capabilities.hasCapability(capability, facing);
-    }
-    @Override
-    @Nullable
-    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable EnumFacing facing)
-    {
-        return capabilities == null ? null : capabilities.getCapability(capability, facing);
+        if (activeModContainer == null) // vanilla minecraft has problems too (MC-114332), log it at a quieter level.
+            net.minecraftforge.fml.common.FMLLog.log.debug(format, "Minecraft", this.x, this.z, this.world.provider.getDimension());
+        else
+            net.minecraftforge.fml.common.FMLLog.log.warn(format, activeModContainer.getName(), this.x, this.z, this.world.provider.getDimension());
     }
 }

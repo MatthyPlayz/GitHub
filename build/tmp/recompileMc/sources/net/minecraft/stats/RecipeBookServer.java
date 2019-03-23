@@ -55,7 +55,7 @@ public class RecipeBookServer extends RecipeBook
 
     private void sendPacket(SPacketRecipeBook.State state, EntityPlayerMP player, List<IRecipe> recipesIn)
     {
-        net.minecraftforge.common.ForgeHooks.sendRecipeBook(player.connection, state, recipesIn, Collections.emptyList(), this.isGuiOpen, this.isFilteringCraftable);
+        player.connection.sendPacket(new SPacketRecipeBook(state, recipesIn, Collections.emptyList(), this.isGuiOpen, this.isFilteringCraftable));
     }
 
     public NBTTagCompound write()
@@ -147,6 +147,6 @@ public class RecipeBookServer extends RecipeBook
 
     public void init(EntityPlayerMP player)
     {
-        net.minecraftforge.common.ForgeHooks.sendRecipeBook(player.connection, SPacketRecipeBook.State.INIT, this.getRecipes(), this.getDisplayedRecipes(), this.isGuiOpen, this.isFilteringCraftable);
+        player.connection.sendPacket(new SPacketRecipeBook(SPacketRecipeBook.State.INIT, this.getRecipes(), this.getDisplayedRecipes(), this.isGuiOpen, this.isFilteringCraftable));
     }
 }

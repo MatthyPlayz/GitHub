@@ -22,6 +22,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.StringUtils;
 
 public class ItemSkull extends Item
@@ -161,7 +163,7 @@ public class ItemSkull extends Item
      * Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have
      * different names based on their damage or NBT.
      */
-    public String getUnlocalizedName(ItemStack stack)
+    public String getTranslationKey(ItemStack stack)
     {
         int i = stack.getMetadata();
 
@@ -170,7 +172,7 @@ public class ItemSkull extends Item
             i = 0;
         }
 
-        return super.getUnlocalizedName() + "." + SKULL_TYPES[i];
+        return super.getTranslationKey() + "." + SKULL_TYPES[i];
     }
 
     public String getItemStackDisplayName(ItemStack stack)
@@ -206,7 +208,7 @@ public class ItemSkull extends Item
         if (nbt.hasKey("SkullOwner", 8) && !StringUtils.isBlank(nbt.getString("SkullOwner")))
         {
             GameProfile gameprofile = new GameProfile((UUID)null, nbt.getString("SkullOwner"));
-            gameprofile = TileEntitySkull.updateGameprofile(gameprofile);
+            gameprofile = TileEntitySkull.updateGameProfile(gameprofile);
             nbt.setTag("SkullOwner", NBTUtil.writeGameProfile(new NBTTagCompound(), gameprofile));
             return true;
         }

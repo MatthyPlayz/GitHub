@@ -28,6 +28,8 @@ import net.minecraft.world.WorldServer;
 
 public class PlayerInteractionManager
 {
+    /** Forge reach distance */
+    private double blockReachDistance = 5.0d;
     /** The world object that this object is connected to. */
     public World world;
     /** The EntityPlayerMP object that this object is connected to. */
@@ -57,7 +59,7 @@ public class PlayerInteractionManager
         this.gameType = type;
         type.configurePlayerCapabilities(this.player.capabilities);
         this.player.sendPlayerAbilities();
-        this.player.mcServer.getPlayerList().sendPacketToAllPlayers(new SPacketPlayerListItem(SPacketPlayerListItem.Action.UPDATE_GAME_MODE, new EntityPlayerMP[] {this.player}));
+        this.player.server.getPlayerList().sendPacketToAllPlayers(new SPacketPlayerListItem(SPacketPlayerListItem.Action.UPDATE_GAME_MODE, new EntityPlayerMP[] {this.player}));
         this.world.updateAllPlayersSleepingFlag();
     }
 
@@ -154,8 +156,7 @@ public class PlayerInteractionManager
      */
     public void onBlockClicked(BlockPos pos, EnumFacing side)
     {
-        double reachDist = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
-        net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.minecraftforge.common.ForgeHooks.onLeftClickBlock(player, pos, side, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(player, reachDist + 1));
+        net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.minecraftforge.common.ForgeHooks.onLeftClickBlock(player, pos, side, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(player, getBlockReachDistance() + 1));
         if (event.isCanceled())
         {
             // Restore block and te data
@@ -295,7 +296,7 @@ public class PlayerInteractionManager
 
         if (flag)
         {
-            iblockstate.getBlock().onBlockDestroyedByPlayer(this.world, pos, iblockstate);
+            iblockstate.getBlock().onPlayerDestroy(this.world, pos, iblockstate);
         }
 
         return flag;
@@ -454,19 +455,15 @@ public class PlayerInteractionManager
         }
         else
         {
-            double reachDist = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
             net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = net.minecraftforge.common.ForgeHooks
-                    .onRightClickBlock(player, hand, pos, facing, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(player, reachDist + 1));
+                    .onRightClickBlock(player, hand, pos, facing, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(player, getBlockReachDistance() + 1));
             if (event.isCanceled()) return event.getCancellationResult();
 
-            EnumActionResult result = EnumActionResult.PASS;
-            if (event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
-            {
-                result = stack.onItemUseFirst(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
-                if (result != EnumActionResult.PASS) return result ;
-            }
+            EnumActionResult ret = stack.onItemUseFirst(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+            if (ret != EnumActionResult.PASS) return ret;
 
-            boolean bypass = player.getHeldItemMainhand().doesSneakBypassUse(worldIn, pos, player) && player.getHeldItemOffhand().doesSneakBypassUse(worldIn, pos, player);
+            boolean bypass = stack.isEmpty() || stack.getItem().doesSneakBypassUse(stack, worldIn, pos, player);
+            EnumActionResult result = EnumActionResult.PASS;
 
             if (!player.isSneaking() || bypass || event.getUseBlock() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
             {
@@ -531,15 +528,12 @@ public class PlayerInteractionManager
         this.world = serverWorld;
     }
 
-    @Deprecated // use the attribute directly
     public double getBlockReachDistance()
     {
-        return player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
+        return blockReachDistance;
     }
-
-    @Deprecated // use an attribute modifier
     public void setBlockReachDistance(double distance)
     {
-        player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(distance);
+        blockReachDistance = distance;
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,8 @@ package net.minecraftforge.fml.common.network.handshake;
 
 import net.minecraftforge.fml.common.FMLLog;
 
+import org.apache.logging.log4j.Level;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.AttributeKey;
@@ -28,52 +30,45 @@ import io.netty.util.AttributeKey;
 public class HandshakeMessageHandler<S extends Enum<S> & IHandshakeState<S>> extends SimpleChannelInboundHandler<FMLHandshakeMessage> {
     private static final AttributeKey<IHandshakeState<?>> STATE = AttributeKey.valueOf("fml:handshake-state");
     private final AttributeKey<S> fmlHandshakeState;
-    private final S initialState;
-    private final S errorState;
-    private final Class<S> stateType;
+    private S initialState;
+    private Class<S> stateType;
 
     @SuppressWarnings("unchecked")
     public HandshakeMessageHandler(Class<S> stateType)
     {
         fmlHandshakeState = (AttributeKey<S>) ((Object)STATE);
         initialState = Enum.valueOf(stateType, "START");
-        errorState = Enum.valueOf(stateType, "ERROR");
         this.stateType = stateType;
     }
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FMLHandshakeMessage msg) throws Exception
     {
-        S state = ctx.channel().attr(fmlHandshakeState).get();
+        S state = ctx.attr(fmlHandshakeState).get();
         FMLLog.log.debug("{}: {}->{}:{}", stateType.getSimpleName(), msg.toString(stateType), state.getClass().getName().substring(state.getClass().getName().lastIndexOf('.')+1), state);
-        state.accept(ctx, msg, s ->
-        {
-            FMLLog.log.debug("  Next: {}", s.name());
-            ctx.channel().attr(fmlHandshakeState).set(s);
-        });
+        S newState = state.accept(ctx, msg);
+        FMLLog.log.debug("  Next: {}", newState.name());
+        ctx.attr(fmlHandshakeState).set(newState);
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception
     {
-        ctx.channel().attr(fmlHandshakeState).set(initialState);
+        ctx.attr(fmlHandshakeState).set(initialState);
     }
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception
     {
-        S state = ctx.channel().attr(fmlHandshakeState).get();
+        S state = ctx.attr(fmlHandshakeState).get();
         FMLLog.log.debug("{}: null->{}:{}", stateType.getSimpleName(), state.getClass().getName().substring(state.getClass().getName().lastIndexOf('.')+1), state);
-        state.accept(ctx, null, s ->
-        {
-            FMLLog.log.debug("  Next: {}", s.name());
-            ctx.channel().attr(fmlHandshakeState).set(s);
-        });
+        S newState = state.accept(ctx, null);
+        FMLLog.log.debug("  Next: {}", newState.name());
+        ctx.attr(fmlHandshakeState).set(newState);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
     {
         FMLLog.log.error("HandshakeMessageHandler exception", cause);
-        ctx.channel().attr(fmlHandshakeState).set(errorState);
         super.exceptionCaught(ctx, cause);
     }
 }

@@ -125,7 +125,7 @@ public class WorldInfo
         if (nbt.hasKey("generatorName", 8))
         {
             String s1 = nbt.getString("generatorName");
-            this.terrainType = WorldType.parseWorldType(s1);
+            this.terrainType = WorldType.byName(s1);
 
             if (this.terrainType == null)
             {
@@ -216,7 +216,7 @@ public class WorldInfo
 
         if (nbt.hasKey("Difficulty", 99))
         {
-            this.difficulty = EnumDifficulty.getDifficultyEnum(nbt.getByte("Difficulty"));
+            this.difficulty = EnumDifficulty.byId(nbt.getByte("Difficulty"));
         }
 
         if (nbt.hasKey("DifficultyLocked", 1))
@@ -356,11 +356,12 @@ public class WorldInfo
     private void updateTagCompound(NBTTagCompound nbt, NBTTagCompound playerNbt)
     {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
-        nbttagcompound.setString("Name", "1.12.2");
-        nbttagcompound.setInteger("Id", 1343);
+        nbttagcompound.setString("Name", "1.12");
+        nbttagcompound.setInteger("Id", 1139);
         nbttagcompound.setBoolean("Snapshot", false);
         nbt.setTag("Version", nbttagcompound);
-        nbt.setInteger("DataVersion", 1343);
+        nbt.setInteger("DataVersion", 1139);
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt);
         nbt.setLong("RandomSeed", this.randomSeed);
         nbt.setString("generatorName", this.terrainType.getName());
         nbt.setInteger("generatorVersion", this.terrainType.getVersion());
@@ -393,11 +394,10 @@ public class WorldInfo
         nbt.setDouble("BorderSizeLerpTarget", this.borderSizeLerpTarget);
         nbt.setDouble("BorderWarningBlocks", (double)this.borderWarningDistance);
         nbt.setDouble("BorderWarningTime", (double)this.borderWarningTime);
-        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt);
 
         if (this.difficulty != null)
         {
-            nbt.setByte("Difficulty", (byte)this.difficulty.getDifficultyId());
+            nbt.setByte("Difficulty", (byte)this.difficulty.getId());
         }
 
         nbt.setBoolean("DifficultyLocked", this.difficultyLocked);
@@ -406,7 +406,7 @@ public class WorldInfo
 
         for (Entry<Integer, NBTTagCompound> entry : this.dimensionData.entrySet())
         {
-            if (entry.getValue() == null || entry.getValue().hasNoTags()) continue;
+            if (entry.getValue() != null || entry.getValue().isEmpty()) continue;
             nbttagcompound1.setTag(String.valueOf(entry.getKey()), entry.getValue());
         }
 

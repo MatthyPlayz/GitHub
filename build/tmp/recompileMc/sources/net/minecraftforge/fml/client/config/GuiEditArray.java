@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -107,7 +107,7 @@ public class GuiEditArray extends GuiScreen
     @Override
     public void initGui()
     {
-        this.entryList = createEditArrayEntries();
+        this.entryList = new GuiEditArrayEntries(this, this.mc, this.configElement, this.beforeValues, this.currentValues);
 
         int undoGlyphWidth = mc.fontRenderer.getStringWidth(UNDO_CHAR) * 2;
         int resetGlyphWidth = mc.fontRenderer.getStringWidth(RESET_CHAR) * 2;
@@ -143,18 +143,13 @@ public class GuiEditArray extends GuiScreen
         else if (button.id == 2001)
         {
             this.currentValues = configElement.getDefaults();
-            this.entryList = createEditArrayEntries();
+            this.entryList = new GuiEditArrayEntries(this, this.mc, this.configElement, this.beforeValues, this.currentValues);
         }
         else if (button.id == 2002)
         {
             this.currentValues = Arrays.copyOf(beforeValues, beforeValues.length);
-            this.entryList = createEditArrayEntries();
+            this.entryList = new GuiEditArrayEntries(this, this.mc, this.configElement, this.beforeValues, this.currentValues);
         }
-    }
-
-    protected GuiEditArrayEntries createEditArrayEntries()
-    {
-        return new GuiEditArrayEntries(this, this.mc, this.configElement, this.beforeValues, this.currentValues);
     }
 
     /**

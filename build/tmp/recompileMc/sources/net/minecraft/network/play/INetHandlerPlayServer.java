@@ -16,13 +16,13 @@ import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketInput;
 import net.minecraft.network.play.client.CPacketKeepAlive;
-import net.minecraft.network.play.client.CPacketPlaceRecipe;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketPlayerAbilities;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.client.CPacketRecipeInfo;
+import net.minecraft.network.play.client.CPacketRecipePlacement;
 import net.minecraft.network.play.client.CPacketResourcePackStatus;
 import net.minecraft.network.play.client.CPacketSeenAdvancements;
 import net.minecraft.network.play.client.CPacketSpectate;
@@ -78,7 +78,7 @@ public interface INetHandlerPlayServer extends INetHandler
      */
     void processClickWindow(CPacketClickWindow packetIn);
 
-    void func_194308_a(CPacketPlaceRecipe p_194308_1_);
+    void handleRecipePlacement(CPacketRecipePlacement p_191985_1_);
 
     /**
      * Processes the client closing windows (container)

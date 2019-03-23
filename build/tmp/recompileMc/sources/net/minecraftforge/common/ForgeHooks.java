@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,7 +33,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
@@ -45,13 +44,11 @@ import com.google.gson.JsonParseException;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -66,26 +63,15 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBucket;
-import net.minecraft.item.ItemEnchantedBook;
-import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemPickaxe;
-import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemTippedArrow;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketBlockChange;
-import net.minecraft.network.play.server.SPacketRecipeBook;
-import net.minecraft.network.play.server.SPacketRecipeBook.State;
-import net.minecraft.potion.PotionType;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityNote;
@@ -121,16 +107,15 @@ import net.minecraftforge.event.DifficultyChangeEvent;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
+import net.minecraftforge.event.entity.ThrowableImpactEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.living.LootingLevelEvent;
 import net.minecraftforge.event.entity.player.AnvilRepairEvent;
@@ -138,7 +123,6 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.fluids.IFluidBlock;
@@ -146,14 +130,8 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
-import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher.ConnectionType;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
-
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -193,15 +171,6 @@ public class ForgeHooks
             return ItemStack.EMPTY;
         }
         return entry.getStack(rand, fortune);
-    }
-
-    public static boolean canContinueUsing(@Nonnull ItemStack from, @Nonnull ItemStack to)
-    {
-        if (!from.isEmpty() && !to.isEmpty())
-        {
-            return from.getItem().canContinueUsing(from, to);
-        }
-        return false;
     }
 
     private static boolean toolInit = false;
@@ -279,19 +248,19 @@ public class ForgeHooks
         }
         toolInit = true;
 
-        Set<Block> blocks = ObfuscationReflectionHelper.getPrivateValue(ItemPickaxe.class, null, "field_150915"+"_c");
+        Set<Block> blocks = ReflectionHelper.getPrivateValue(ItemPickaxe.class, null, 0);
         for (Block block : blocks)
         {
             block.setHarvestLevel("pickaxe", 0);
         }
 
-        blocks = ObfuscationReflectionHelper.getPrivateValue(ItemSpade.class, null, "field_150916"+"_c");
+        blocks = ReflectionHelper.getPrivateValue(ItemSpade.class, null, 0);
         for (Block block : blocks)
         {
             block.setHarvestLevel("shovel", 0);
         }
 
-        blocks = ObfuscationReflectionHelper.getPrivateValue(ItemAxe.class, null, "field_150917"+"_c");
+        blocks = ReflectionHelper.getPrivateValue(ItemAxe.class, null, 0);
         for (Block block : blocks)
         {
             block.setHarvestLevel("axe", 0);
@@ -339,6 +308,7 @@ public class ForgeHooks
                 return new ItemStack(Items.WHEAT_SEEDS, 1 + rand.nextInt(fortune * 2 + 1));
             }
         });
+        initTools();
     }
 
     /**
@@ -577,30 +547,12 @@ public class ForgeHooks
 
     public static boolean onLivingAttack(EntityLivingBase entity, DamageSource src, float amount)
     {
-        return entity instanceof EntityPlayer || !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
-    }
-
-    public static boolean onPlayerAttack(EntityLivingBase entity, DamageSource src, float amount)
-    {
         return !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
-    }
-
-    public static LivingKnockBackEvent onLivingKnockBack(EntityLivingBase target, Entity attacker, float strength, double ratioX, double ratioZ)
-    {
-        LivingKnockBackEvent event = new LivingKnockBackEvent(target, attacker, strength, ratioX, ratioZ);
-        MinecraftForge.EVENT_BUS.post(event);
-        return event;
     }
 
     public static float onLivingHurt(EntityLivingBase entity, DamageSource src, float amount)
     {
         LivingHurtEvent event = new LivingHurtEvent(entity, src, amount);
-        return (MinecraftForge.EVENT_BUS.post(event) ? 0 : event.getAmount());
-    }
-
-    public static float onLivingDamage(EntityLivingBase entity, DamageSource src, float amount)
-    {
-        LivingDamageEvent event = new LivingDamageEvent(entity, src, amount);
         return (MinecraftForge.EVENT_BUS.post(event) ? 0 : event.getAmount());
     }
 
@@ -1042,16 +994,18 @@ public class ForgeHooks
         }
         else if (block instanceof BlockLiquid)
         {
-            filled = 1.0 - (BlockLiquid.getLiquidHeightPercent(block.getMetaFromState(state)) - (1.0 / 9.0));
+            filled = BlockLiquid.getLiquidHeightPercent(block.getMetaFromState(state));
         }
 
         if (filled < 0)
         {
-            return eyes > pos.getY() + (filled + 1);
+            filled *= -1;
+            //filled -= 0.11111111F; //Why this is needed.. not sure...
+            return eyes > pos.getY() + 1 + (1 - filled);
         }
         else
         {
-            return eyes < pos.getY() + filled;
+            return eyes < pos.getY() + 1 + filled;
         }
     }
 
@@ -1199,7 +1153,7 @@ public class ForgeHooks
         {
             this.name = name;
             this.custom = custom;
-            this.vanilla = "minecraft".equals(this.name.getResourceDomain());
+            this.vanilla = "minecraft".equals(this.name.getNamespace());
         }
 
         private void resetPoolCtx()
@@ -1276,11 +1230,9 @@ public class ForgeHooks
     public static LootEntry deserializeJsonLootEntry(String type, JsonObject json, int weight, int quality, LootCondition[] conditions){ return null; }
     public static String getLootEntryType(LootEntry entry){ return null; } //Companion to above function
 
-    /** @deprecated use {@link ForgeEventFactory#onProjectileImpact(EntityThrowable, RayTraceResult)} */
-    @Deprecated // TODO: remove (1.13)
     public static boolean onThrowableImpact(EntityThrowable throwable, RayTraceResult ray)
     {
-        return ForgeEventFactory.onProjectileImpact(throwable, ray);
+        return MinecraftForge.EVENT_BUS.post(new ThrowableImpactEvent(throwable, ray));
     }
 
     public static boolean onCropsGrowPre(World worldIn, BlockPos pos, IBlockState state, boolean def)
@@ -1382,92 +1334,7 @@ public class ForgeHooks
 
                 return true;
             },
-            true, true
+            true
         );
     }
-
-    public static void sendRecipeBook(NetHandlerPlayServer connection, State state, List<IRecipe> recipes, List<IRecipe> display, boolean isGuiOpen, boolean isFilteringCraftable)
-    {
-        NetworkDispatcher disp = NetworkDispatcher.get(connection.getNetworkManager());
-        //Not sure how it could ever be null, but screw it lets protect against it. Could Error the client but we dont care if they are asking for this stuff in the wrong state!
-        ConnectionType type = disp == null || disp.getConnectionType() == null ? ConnectionType.MODDED : disp.getConnectionType();
-        if (type == ConnectionType.VANILLA)
-        {
-            IForgeRegistry<IRecipe> vanilla = RegistryManager.VANILLA.getRegistry(IRecipe.class);
-            if (recipes.size() > 0)
-                recipes = recipes.stream().filter(e -> vanilla.containsValue(e)).collect(Collectors.toList());
-            if (display.size() > 0)
-                display = display.stream().filter(e -> vanilla.containsValue(e)).collect(Collectors.toList());
-        }
-
-        if (recipes.size() > 0 || display.size() > 0)
-            connection.sendPacket(new SPacketRecipeBook(state, recipes, display, isGuiOpen, isFilteringCraftable));
-    }
-
-    public static void onAdvancement(EntityPlayerMP player, Advancement advancement)
-    {
-        MinecraftForge.EVENT_BUS.post(new AdvancementEvent(player, advancement));
-    }
-
-    /**
-     * Used as the default implementation of {@link Item#getCreatorModId}. Call that method instead.
-     */
-    @Nullable
-    public static String getDefaultCreatorModId(@Nonnull ItemStack itemStack)
-    {
-        Item item = itemStack.getItem();
-        ResourceLocation registryName = item.getRegistryName();
-        String modId = registryName == null ? null : registryName.getResourceDomain();
-        if ("minecraft".equals(modId))
-        {
-            if (item instanceof ItemEnchantedBook)
-            {
-                NBTTagList enchantmentsNbt = ItemEnchantedBook.getEnchantments(itemStack);
-                if (enchantmentsNbt.tagCount() == 1)
-                {
-                    NBTTagCompound nbttagcompound = enchantmentsNbt.getCompoundTagAt(0);
-                    Enchantment enchantment = Enchantment.getEnchantmentByID(nbttagcompound.getShort("id"));
-                    if (enchantment != null)
-                    {
-                        ResourceLocation resourceLocation = ForgeRegistries.ENCHANTMENTS.getKey(enchantment);
-                        if (resourceLocation != null)
-                        {
-                            return resourceLocation.getResourceDomain();
-                        }
-                    }
-                }
-            }
-            else if (item instanceof ItemPotion || item instanceof ItemTippedArrow)
-            {
-                PotionType potionType = PotionUtils.getPotionFromItem(itemStack);
-                ResourceLocation resourceLocation = ForgeRegistries.POTION_TYPES.getKey(potionType);
-                if (resourceLocation != null)
-                {
-                    return resourceLocation.getResourceDomain();
-                }
-            }
-            else if (item instanceof ItemMonsterPlacer)
-            {
-                ResourceLocation resourceLocation = ItemMonsterPlacer.getNamedIdFrom(itemStack);
-                if (resourceLocation != null)
-                {
-                    return resourceLocation.getResourceDomain();
-                }
-            }
-        }
-        return modId;
-    }
-
-    public static boolean onFarmlandTrample(World world, BlockPos pos, IBlockState state, float fallDistance, Entity entity)
-    {
-
-        if (entity.canTrample(world, state.getBlock(), pos, fallDistance))
-        {
-            BlockEvent.FarmlandTrampleEvent event = new BlockEvent.FarmlandTrampleEvent(world, pos, state, fallDistance, entity);
-            MinecraftForge.EVENT_BUS.post(event);
-            return !event.isCanceled();
-        }
-        return false;
-    }
-
 }

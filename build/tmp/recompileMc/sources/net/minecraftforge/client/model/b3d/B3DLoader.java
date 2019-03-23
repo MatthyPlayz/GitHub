@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -70,7 +70,6 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.common.property.Properties;
 import net.minecraftforge.fml.common.FMLLog;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -117,29 +116,29 @@ public enum B3DLoader implements ICustomModelLoader
     @Override
     public boolean accepts(ResourceLocation modelLocation)
     {
-        return enabledDomains.contains(modelLocation.getResourceDomain()) && modelLocation.getResourcePath().endsWith(".b3d");
+        return enabledDomains.contains(modelLocation.getNamespace()) && modelLocation.getPath().endsWith(".b3d");
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public IModel loadModel(ResourceLocation modelLocation) throws Exception
     {
-        ResourceLocation file = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
+        ResourceLocation file = new ResourceLocation(modelLocation.getNamespace(), modelLocation.getPath());
         if(!cache.containsKey(file))
         {
-            IResource resource = null;
             try
             {
+                IResource resource;
                 try
                 {
                     resource = manager.getResource(file);
                 }
                 catch(FileNotFoundException e)
                 {
-                    if(modelLocation.getResourcePath().startsWith("models/block/"))
-                        resource = manager.getResource(new ResourceLocation(file.getResourceDomain(), "models/item/" + file.getResourcePath().substring("models/block/".length())));
-                    else if(modelLocation.getResourcePath().startsWith("models/item/"))
-                        resource = manager.getResource(new ResourceLocation(file.getResourceDomain(), "models/block/" + file.getResourcePath().substring("models/item/".length())));
+                    if(modelLocation.getPath().startsWith("models/block/"))
+                        resource = manager.getResource(new ResourceLocation(file.getNamespace(), "models/item/" + file.getPath().substring("models/block/".length())));
+                    else if(modelLocation.getPath().startsWith("models/item/"))
+                        resource = manager.getResource(new ResourceLocation(file.getNamespace(), "models/block/" + file.getPath().substring("models/item/".length())));
                     else throw e;
                 }
                 B3DModel.Parser parser = new B3DModel.Parser(resource.getInputStream());
@@ -150,10 +149,6 @@ public enum B3DLoader implements ICustomModelLoader
             {
                 cache.put(file, null);
                 throw e;
-            }
-            finally
-            {
-                IOUtils.closeQuietly(resource);
             }
         }
         B3DModel model = cache.get(file);
@@ -452,7 +447,7 @@ public enum B3DLoader implements ICustomModelLoader
         @Override
         public Collection<ResourceLocation> getTextures()
         {
-            return Collections2.filter(textures.values(), loc -> !loc.getResourcePath().startsWith("#"));
+            return Collections2.filter(textures.values(), loc -> !loc.getPath().startsWith("#"));
         }
 
         @Override
@@ -462,9 +457,9 @@ public enum B3DLoader implements ICustomModelLoader
             TextureAtlasSprite missing = bakedTextureGetter.apply(new ResourceLocation("missingno"));
             for(Map.Entry<String, ResourceLocation> e : textures.entrySet())
             {
-                if(e.getValue().getResourcePath().startsWith("#"))
+                if(e.getValue().getPath().startsWith("#"))
                 {
-                    FMLLog.log.fatal("unresolved texture '{}' for b3d model '{}'", e.getValue().getResourcePath(), modelLocation);
+                    FMLLog.log.fatal("unresolved texture '{}' for b3d model '{}'", e.getValue().getPath(), modelLocation);
                     builder.put(e.getKey(), missing);
                 }
                 else
@@ -501,9 +496,6 @@ public enum B3DLoader implements ICustomModelLoader
         @Override
         public ModelWrapper process(ImmutableMap<String, String> data)
         {
-            ImmutableSet<String> newMeshes = this.meshes;
-            int newDefaultKey = this.defaultKey;
-            boolean hasChanged = false;
             if(data.containsKey("mesh"))
             {
                 JsonElement e = new JsonParser().parse(data.get("mesh"));
@@ -526,8 +518,7 @@ public enum B3DLoader implements ICustomModelLoader
                             return this;
                         }
                     }
-                    newMeshes = builder.build();
-                    hasChanged = true;
+                    return new ModelWrapper(modelLocation, model, builder.build(), smooth, gui3d, defaultKey, textures);
                 }
                 else
                 {
@@ -540,8 +531,7 @@ public enum B3DLoader implements ICustomModelLoader
                 JsonElement e = new JsonParser().parse(data.get("key"));
                 if(e.isJsonPrimitive() && e.getAsJsonPrimitive().isNumber())
                 {
-                    newDefaultKey = e.getAsNumber().intValue();
-                    hasChanged = true;
+                    return new ModelWrapper(modelLocation, model, meshes, smooth, gui3d, e.getAsNumber().intValue(), textures);
                 }
                 else
                 {
@@ -549,7 +539,7 @@ public enum B3DLoader implements ICustomModelLoader
                     return this;
                 }
             }
-            return hasChanged ? new ModelWrapper(modelLocation, model, newMeshes, smooth, gui3d, newDefaultKey, textures) : this;
+            return this;
         }
 
         @Override

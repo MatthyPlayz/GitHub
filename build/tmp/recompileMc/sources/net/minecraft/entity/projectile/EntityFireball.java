@@ -99,7 +99,7 @@ public abstract class EntityFireball extends Entity
             ++this.ticksInAir;
             RayTraceResult raytraceresult = ProjectileHelper.forwardsRaycast(this, true, this.ticksInAir >= 25, this.shootingEntity);
 
-            if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
+            if (raytraceresult != null)
             {
                 this.onImpact(raytraceresult);
             }

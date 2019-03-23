@@ -44,7 +44,7 @@ public class GuiCrafting extends GuiContainer implements IRecipeShownListener
     {
         super.initGui();
         this.widthTooNarrow = this.width < 379;
-        this.recipeBookGui.func_194303_a(this.width, this.height, this.mc, this.widthTooNarrow, ((ContainerWorkbench)this.inventorySlots).craftMatrix);
+        this.recipeBookGui.init(this.width, this.height, this.mc, this.widthTooNarrow, this.inventorySlots, ((ContainerWorkbench)this.inventorySlots).craftMatrix);
         this.guiLeft = this.recipeBookGui.updateScreenPosition(this.widthTooNarrow, this.width, this.xSize);
         this.recipeButton = new GuiButtonImage(10, this.guiLeft + 5, this.height / 2 - 49, 20, 18, 0, 168, 19, CRAFTING_TABLE_GUI_TEXTURES);
         this.buttonList.add(this.recipeButton);
@@ -179,10 +179,5 @@ public class GuiCrafting extends GuiContainer implements IRecipeShownListener
     {
         this.recipeBookGui.removed();
         super.onGuiClosed();
-    }
-
-    public GuiRecipeBook func_194310_f()
-    {
-        return this.recipeBookGui;
     }
 }

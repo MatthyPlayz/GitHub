@@ -60,7 +60,7 @@ public class RealmsConnect
                         return;
                     }
 
-                    RealmsConnect.this.connection.sendPacket(new C00Handshake(p_connect_1_, p_connect_2_, EnumConnectionState.LOGIN, true));
+                    RealmsConnect.this.connection.sendPacket(new C00Handshake(335, p_connect_1_, p_connect_2_, EnumConnectionState.LOGIN, true));
 
                     if (RealmsConnect.this.aborted)
                     {
@@ -112,7 +112,7 @@ public class RealmsConnect
         if (this.connection != null && this.connection.isChannelOpen())
         {
             this.connection.closeChannel(new TextComponentTranslation("disconnect.genericReason", new Object[0]));
-            this.connection.checkDisconnected();
+            this.connection.handleDisconnection();
         }
     }
 
@@ -126,7 +126,7 @@ public class RealmsConnect
             }
             else
             {
-                this.connection.checkDisconnected();
+                this.connection.handleDisconnection();
             }
         }
     }

@@ -1,0 +1,14 @@
+{
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "plains": "2019-03-23 08:15:16 -0400"
+    },
+    "done": false
+  },
+  "minecraft:story/root": {
+    "criteria": {
+      "crafting_table": "2019-03-23 08:15:16 -0400"
+    },
+    "done": true
+  }
+}

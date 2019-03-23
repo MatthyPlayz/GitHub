@@ -13,6 +13,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockPrismarine extends Block
 {
@@ -33,11 +35,13 @@ public class BlockPrismarine extends Block
      */
     public String getLocalizedName()
     {
-        return I18n.translateToLocal(this.getUnlocalizedName() + "." + BlockPrismarine.EnumType.ROUGH.getUnlocalizedName() + ".name");
+        return I18n.translateToLocal(this.getTranslationKey() + "." + BlockPrismarine.EnumType.ROUGH.getTranslationKey() + ".name");
     }
 
     /**
      * Get the MapColor for this Block and the given BlockState
+     * @deprecated call via {@link IBlockState#getMapColor(IBlockAccess,BlockPos)} whenever possible.
+     * Implementing/overriding is fine.
      */
     public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
@@ -93,13 +97,13 @@ public class BlockPrismarine extends Block
         private static final BlockPrismarine.EnumType[] META_LOOKUP = new BlockPrismarine.EnumType[values().length];
         private final int meta;
         private final String name;
-        private final String unlocalizedName;
+        private final String translationKey;
 
         private EnumType(int meta, String name, String unlocalizedName)
         {
             this.meta = meta;
             this.name = name;
-            this.unlocalizedName = unlocalizedName;
+            this.translationKey = unlocalizedName;
         }
 
         public int getMetadata()
@@ -127,9 +131,9 @@ public class BlockPrismarine extends Block
             return this.name;
         }
 
-        public String getUnlocalizedName()
+        public String getTranslationKey()
         {
-            return this.unlocalizedName;
+            return this.translationKey;
         }
 
         static

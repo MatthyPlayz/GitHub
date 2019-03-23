@@ -40,7 +40,6 @@ import net.minecraft.network.play.server.SPacketMoveVehicle;
 import net.minecraft.network.play.server.SPacketMultiBlockChange;
 import net.minecraft.network.play.server.SPacketOpenWindow;
 import net.minecraft.network.play.server.SPacketParticles;
-import net.minecraft.network.play.server.SPacketPlaceGhostRecipe;
 import net.minecraft.network.play.server.SPacketPlayerAbilities;
 import net.minecraft.network.play.server.SPacketPlayerListHeaderFooter;
 import net.minecraft.network.play.server.SPacketPlayerListItem;
@@ -390,6 +389,4 @@ public interface INetHandlerPlayClient extends INetHandler
     void handleAdvancementInfo(SPacketAdvancementInfo packetIn);
 
     void handleSelectAdvancementsTab(SPacketSelectAdvancementsTab packetIn);
-
-    void func_194307_a(SPacketPlaceGhostRecipe p_194307_1_);
 }

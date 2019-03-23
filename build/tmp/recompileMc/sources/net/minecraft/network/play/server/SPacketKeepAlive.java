@@ -9,13 +9,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class SPacketKeepAlive implements Packet<INetHandlerPlayClient>
 {
-    private long id;
+    private int id;
 
     public SPacketKeepAlive()
     {
     }
 
-    public SPacketKeepAlive(long idIn)
+    public SPacketKeepAlive(int idIn)
     {
         this.id = idIn;
     }
@@ -33,7 +33,7 @@ public class SPacketKeepAlive implements Packet<INetHandlerPlayClient>
      */
     public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.id = buf.readLong();
+        this.id = buf.readVarInt();
     }
 
     /**
@@ -41,11 +41,11 @@ public class SPacketKeepAlive implements Packet<INetHandlerPlayClient>
      */
     public void writePacketData(PacketBuffer buf) throws IOException
     {
-        buf.writeLong(this.id);
+        buf.writeVarInt(this.id);
     }
 
     @SideOnly(Side.CLIENT)
-    public long getId()
+    public int getId()
     {
         return this.id;
     }

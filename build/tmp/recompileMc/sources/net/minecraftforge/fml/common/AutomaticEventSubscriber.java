@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -78,14 +78,14 @@ public class AutomaticEventSubscriber
                         continue; //We're not injecting this guy
                     }
                     FMLLog.log.debug("Registering @EventBusSubscriber for {} for mod {}", targ.getClassName(), mod.getModId());
-                    Class<?> subscriptionTarget = Class.forName(targ.getClassName(), false, mcl);
+                    Class<?> subscriptionTarget = Class.forName(targ.getClassName(), true, mcl);
                     MinecraftForge.EVENT_BUS.register(subscriptionTarget);
                     FMLLog.log.debug("Injected @EventBusSubscriber class {}", targ.getClassName());
                 }
             }
-            catch (Throwable e)
+            catch (Exception e)
             {
-                FMLLog.log.error("An error occurred trying to load an EventBusSubscriber {} for modid {}", targ.getClassName(), mod.getModId(), e);
+                FMLLog.log.error("An error occurred trying to load an EventBusSubscriber {} for modid {}", mod.getModId(), e);
                 throw new LoaderException(e);
             }
         }

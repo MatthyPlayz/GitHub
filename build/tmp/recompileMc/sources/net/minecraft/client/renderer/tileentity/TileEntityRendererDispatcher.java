@@ -95,7 +95,7 @@ public class TileEntityRendererDispatcher
     @Nullable
     public <T extends TileEntity> TileEntitySpecialRenderer<T> getRenderer(@Nullable TileEntity tileEntityIn)
     {
-        return tileEntityIn == null || tileEntityIn.isInvalid() ? null : this.getRenderer(tileEntityIn.getClass()); // Forge: fix MC-123363
+        return tileEntityIn == null ? null : this.getRenderer(tileEntityIn.getClass());
     }
 
     public void prepare(World worldIn, TextureManager renderEngineIn, FontRenderer fontRendererIn, Entity entityIn, RayTraceResult cameraHitResultIn, float p_190056_6_)
@@ -120,9 +120,9 @@ public class TileEntityRendererDispatcher
     {
         if (tileentityIn.getDistanceSq(this.entityX, this.entityY, this.entityZ) < tileentityIn.getMaxRenderDistanceSquared())
         {
+            RenderHelper.enableStandardItemLighting();
             if(!drawingBatch || !tileentityIn.hasFastRenderer())
             {
-            RenderHelper.enableStandardItemLighting();
             int i = this.world.getCombinedLight(tileentityIn.getPos(), 0);
             int j = i % 65536;
             int k = i / 65536;
@@ -225,8 +225,7 @@ public class TileEntityRendererDispatcher
 
         if(pass > 0)
         {
-            net.minecraft.util.math.Vec3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
-            batchBuffer.getBuffer().sortVertexData((float)cameraPos.x, (float)cameraPos.y, (float)cameraPos.z);
+            batchBuffer.getBuffer().sortVertexData((float)staticPlayerX, (float)staticPlayerY, (float)staticPlayerZ);
         }
         batchBuffer.draw();
 

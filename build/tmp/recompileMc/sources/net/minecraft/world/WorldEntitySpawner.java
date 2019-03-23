@@ -192,7 +192,7 @@ public final class WorldEntitySpawner
 
     private static BlockPos getRandomChunkPosition(World worldIn, int x, int z)
     {
-        Chunk chunk = worldIn.getChunkFromChunkCoords(x, z);
+        Chunk chunk = worldIn.getChunk(x, z);
         int i = x * 16 + worldIn.rand.nextInt(16);
         int j = z * 16 + worldIn.rand.nextInt(16);
         int k = MathHelper.roundUp(chunk.getHeight(new BlockPos(i, 0, j)) + 1, 16);
@@ -227,13 +227,6 @@ public final class WorldEntitySpawner
             return false;
         }
         else
-        {
-            return spawnPlacementTypeIn.canSpawnAt(worldIn, pos);
-        }
-    }
-
-    public static boolean canCreatureTypeSpawnBody(EntityLiving.SpawnPlacementType spawnPlacementTypeIn, World worldIn, BlockPos pos)
-    {
         {
             IBlockState iblockstate = worldIn.getBlockState(pos);
 
@@ -306,7 +299,6 @@ public final class WorldEntitySpawner
                                 continue;
                             }
 
-                            if (net.minecraftforge.event.ForgeEventFactory.canEntitySpawn(entityliving, worldIn, j + 0.5f, (float) blockpos.getY(), k +0.5f, false) == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) continue;
                             entityliving.setLocationAndAngles((double)((float)j + 0.5F), (double)blockpos.getY(), (double)((float)k + 0.5F), randomIn.nextFloat() * 360.0F, 0.0F);
                             worldIn.spawnEntity(entityliving);
                             ientitylivingdata = entityliving.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata);

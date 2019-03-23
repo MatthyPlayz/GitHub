@@ -8,6 +8,8 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemFishFood extends ItemFood
 {
@@ -67,10 +69,10 @@ public class ItemFishFood extends ItemFood
      * Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have
      * different names based on their damage or NBT.
      */
-    public String getUnlocalizedName(ItemStack stack)
+    public String getTranslationKey(ItemStack stack)
     {
         ItemFishFood.FishType itemfishfood$fishtype = ItemFishFood.FishType.byItemStack(stack);
-        return this.getUnlocalizedName() + "." + itemfishfood$fishtype.getUnlocalizedName() + "." + (this.cooked && itemfishfood$fishtype.canCook() ? "cooked" : "raw");
+        return this.getTranslationKey() + "." + itemfishfood$fishtype.getTranslationKey() + "." + (this.cooked && itemfishfood$fishtype.canCook() ? "cooked" : "raw");
     }
 
     public static enum FishType
@@ -88,7 +90,7 @@ public class ItemFishFood extends ItemFood
          * The value that this fish type uses to replace "XYZ" in: "fish.XYZ.raw" / "fish.XYZ.cooked" for the
          * unlocalized name and "fish_XYZ_raw" / "fish_XYZ_cooked" for the icon string.
          */
-        private final String unlocalizedName;
+        private final String translationKey;
         /** The amount that eating the uncooked version of this fish should heal the player. */
         private final int uncookedHealAmount;
         /** The saturation modifier to apply to the heal amount when the player eats the uncooked version of this fish. */
@@ -103,7 +105,7 @@ public class ItemFishFood extends ItemFood
         private FishType(int meta, String unlocalizedName, int uncookedHeal, float uncookedSaturation, int cookedHeal, float cookedSaturation)
         {
             this.meta = meta;
-            this.unlocalizedName = unlocalizedName;
+            this.translationKey = unlocalizedName;
             this.uncookedHealAmount = uncookedHeal;
             this.uncookedSaturationModifier = uncookedSaturation;
             this.cookedHealAmount = cookedHeal;
@@ -114,7 +116,7 @@ public class ItemFishFood extends ItemFood
         private FishType(int meta, String unlocalizedName, int uncookedHeal, float uncookedSaturation)
         {
             this.meta = meta;
-            this.unlocalizedName = unlocalizedName;
+            this.translationKey = unlocalizedName;
             this.uncookedHealAmount = uncookedHeal;
             this.uncookedSaturationModifier = uncookedSaturation;
             this.cookedHealAmount = 0;
@@ -134,9 +136,9 @@ public class ItemFishFood extends ItemFood
          * Gets the value that this fish type uses to replace "XYZ" in: "fish.XYZ.raw" / "fish.XYZ.cooked" for the
          * unlocalized name and "fish_XYZ_raw" / "fish_XYZ_cooked" for the icon string.
          */
-        public String getUnlocalizedName()
+        public String getTranslationKey()
         {
-            return this.unlocalizedName;
+            return this.translationKey;
         }
 
         /**

@@ -15,6 +15,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockConcretePowder extends BlockFalling
 {
@@ -27,11 +29,11 @@ public class BlockConcretePowder extends BlockFalling
         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
-    public void onEndFalling(World worldIn, BlockPos pos, IBlockState p_176502_3_, IBlockState p_176502_4_)
+    public void onEndFalling(World worldIn, BlockPos pos, IBlockState fallingState, IBlockState hitState)
     {
-        if (p_176502_4_.getMaterial().isLiquid())
+        if (hitState.getMaterial().isLiquid())
         {
-            worldIn.setBlockState(pos, Blocks.CONCRETE.getDefaultState().withProperty(BlockColored.COLOR, p_176502_3_.getValue(COLOR)), 3);
+            worldIn.setBlockState(pos, Blocks.CONCRETE.getDefaultState().withProperty(BlockColored.COLOR, fallingState.getValue(COLOR)), 3);
         }
     }
 
@@ -107,6 +109,8 @@ public class BlockConcretePowder extends BlockFalling
 
     /**
      * Get the MapColor for this Block and the given BlockState
+     * @deprecated call via {@link IBlockState#getMapColor(IBlockAccess,BlockPos)} whenever possible.
+     * Implementing/overriding is fine.
      */
     public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {

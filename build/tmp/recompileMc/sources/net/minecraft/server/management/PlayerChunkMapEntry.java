@@ -73,7 +73,7 @@ public class PlayerChunkMapEntry
             {
                 this.sendToPlayer(player);
                 // chunk watch event - the chunk is ready
-                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.chunk, player));
+                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.pos, player));
             }
         }
     }
@@ -103,7 +103,7 @@ public class PlayerChunkMapEntry
 
             this.players.remove(player);
 
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.UnWatch(this.chunk, player));
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.UnWatch(this.pos, player));
 
             if (this.players.isEmpty())
             {
@@ -157,7 +157,6 @@ public class PlayerChunkMapEntry
             this.changes = 0;
             this.changedSectionFilter = 0;
             this.sentToPlayers = true;
-            if (this.players.isEmpty()) return true; // Forge: fix MC-120780
             Packet<?> packet = new SPacketChunkData(this.chunk, 65535);
 
             for (EntityPlayerMP entityplayermp : this.players)
@@ -165,7 +164,7 @@ public class PlayerChunkMapEntry
                 entityplayermp.connection.sendPacket(packet);
                 this.playerChunkMap.getWorldServer().getEntityTracker().sendLeashedEntitiesInChunk(entityplayermp, this.chunk);
                 // chunk watch event - delayed to here as the chunk wasn't ready in addPlayer
-                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.chunk, entityplayermp));
+                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.pos, entityplayermp));
             }
 
             return true;
@@ -355,10 +354,5 @@ public class PlayerChunkMapEntry
         }
 
         return d0;
-    }
-
-    public List<EntityPlayerMP> getWatchingPlayers()
-    {
-        return isSentToPlayers() ? java.util.Collections.unmodifiableList(players) : java.util.Collections.emptyList();
     }
 }

@@ -1,67 +1,190 @@
 Symbol range map extraction starting
-Processing 2 files
-startProcessing "com\matthyfamily\Inbcraft.java" md5: 42ee4cd2e46b0c96164c5ab55c6235e7
+Processing 5 files
+startProcessing "com\matthyfamily\Inbcraft.java" md5: f68b5abd2f1cbbecc16279e2b44ff41f
+Cache Hit!
 @|com\matthyfamily\Inbcraft.java|8|24|com.matthyfamily|package|com.matthyfamily|(file)
 Class Start: com.matthyfamily.Inbcraft
-   @|com\matthyfamily\Inbcraft.java|337|340|Mod|class|net.minecraftforge.fml.common.Mod
-   @|com\matthyfamily\Inbcraft.java|341|346|modid|method|net.minecraftforge.fml.common.Mod|modid|()Ljava/lang/String;
-   @|com\matthyfamily\Inbcraft.java|349|357|Inbcraft|class|com.matthyfamily.Inbcraft
-   @|com\matthyfamily\Inbcraft.java|358|363|MODID|field|com.matthyfamily.Inbcraft|MODID
-   @|com\matthyfamily\Inbcraft.java|365|369|name|method|net.minecraftforge.fml.common.Mod|name|()Ljava/lang/String;
-   @|com\matthyfamily\Inbcraft.java|372|380|Inbcraft|class|com.matthyfamily.Inbcraft
-   @|com\matthyfamily\Inbcraft.java|381|385|NAME|field|com.matthyfamily.Inbcraft|NAME
-   @|com\matthyfamily\Inbcraft.java|387|394|version|method|net.minecraftforge.fml.common.Mod|version|()Ljava/lang/String;
-   @|com\matthyfamily\Inbcraft.java|397|405|Inbcraft|class|com.matthyfamily.Inbcraft
-   @|com\matthyfamily\Inbcraft.java|406|413|VERSION|field|com.matthyfamily.Inbcraft|VERSION
-   @|com\matthyfamily\Inbcraft.java|428|436|Inbcraft|class|com.matthyfamily.Inbcraft
-   @|com\matthyfamily\Inbcraft.java|463|469|String|class|java.lang.String
-   @|com\matthyfamily\Inbcraft.java|463|469|String|class|java.lang.String
-   @|com\matthyfamily\Inbcraft.java|470|475|MODID|field|com.matthyfamily.Inbcraft|MODID|
-   @|com\matthyfamily\Inbcraft.java|514|520|String|class|java.lang.String
-   @|com\matthyfamily\Inbcraft.java|514|520|String|class|java.lang.String
-   @|com\matthyfamily\Inbcraft.java|521|525|NAME|field|com.matthyfamily.Inbcraft|NAME|
-   @|com\matthyfamily\Inbcraft.java|564|570|String|class|java.lang.String
-   @|com\matthyfamily\Inbcraft.java|564|570|String|class|java.lang.String
-   @|com\matthyfamily\Inbcraft.java|571|578|VERSION|field|com.matthyfamily.Inbcraft|VERSION|
-   @|com\matthyfamily\Inbcraft.java|608|614|Logger|class|org.apache.logging.log4j.Logger
-   @|com\matthyfamily\Inbcraft.java|608|614|Logger|class|org.apache.logging.log4j.Logger
-   @|com\matthyfamily\Inbcraft.java|615|621|logger|field|com.matthyfamily.Inbcraft|logger|
+   @|com\matthyfamily\Inbcraft.java|465|468|Mod|class|net.minecraftforge.fml.common.Mod
+   @|com\matthyfamily\Inbcraft.java|469|474|modid|method|net.minecraftforge.fml.common.Mod|modid|()Ljava/lang/String;
+   @|com\matthyfamily\Inbcraft.java|477|486|Reference|class|com.matthyfamily.Reference
+   @|com\matthyfamily\Inbcraft.java|487|492|MODID|field|com.matthyfamily.Reference|MODID
+   @|com\matthyfamily\Inbcraft.java|494|498|name|method|net.minecraftforge.fml.common.Mod|name|()Ljava/lang/String;
+   @|com\matthyfamily\Inbcraft.java|499|508|Reference|class|com.matthyfamily.Reference
+   @|com\matthyfamily\Inbcraft.java|509|516|MODNAME|field|com.matthyfamily.Reference|MODNAME
+   @|com\matthyfamily\Inbcraft.java|518|525|version|method|net.minecraftforge.fml.common.Mod|version|()Ljava/lang/String;
+   @|com\matthyfamily\Inbcraft.java|526|535|Reference|class|com.matthyfamily.Reference
+   @|com\matthyfamily\Inbcraft.java|536|543|VERSION|field|com.matthyfamily.Reference|VERSION
+   @|com\matthyfamily\Inbcraft.java|545|570|acceptedMinecraftVersions|method|net.minecraftforge.fml.common.Mod|acceptedMinecraftVersions|()Ljava/lang/String;
+   @|com\matthyfamily\Inbcraft.java|571|580|Reference|class|com.matthyfamily.Reference
+   @|com\matthyfamily\Inbcraft.java|581|608|ACCEPTED_MINECRAFT_VERSIONS|field|com.matthyfamily.Reference|ACCEPTED_MINECRAFT_VERSIONS
+   @|com\matthyfamily\Inbcraft.java|623|631|Inbcraft|class|com.matthyfamily.Inbcraft
+   @|com\matthyfamily\Inbcraft.java|662|670|Inbcraft|class|com.matthyfamily.Inbcraft
+   @|com\matthyfamily\Inbcraft.java|638|646|Instance|class|net.minecraftforge.fml.common.Mod.Instance
+   @|com\matthyfamily\Inbcraft.java|662|670|Inbcraft|class|com.matthyfamily.Inbcraft
+   @|com\matthyfamily\Inbcraft.java|671|679|instance|field|com.matthyfamily.Inbcraft|instance|
    Method Start: preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
-      @|com\matthyfamily\Inbcraft.java|692|697|event|param|com.matthyfamily.Inbcraft|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
-      @|com\matthyfamily\Inbcraft.java|629|641|EventHandler|class|net.minecraftforge.fml.common.Mod.EventHandler
-      @|com\matthyfamily\Inbcraft.java|658|665|preInit|method|com.matthyfamily.Inbcraft|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
-      @|com\matthyfamily\Inbcraft.java|666|691|FMLPreInitializationEvent|class|net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-      @|com\matthyfamily\Inbcraft.java|713|719|logger|field|com.matthyfamily.Inbcraft|logger
-      @|com\matthyfamily\Inbcraft.java|722|727|event|param|com.matthyfamily.Inbcraft|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
-      @|com\matthyfamily\Inbcraft.java|728|737|getModLog|method|net.minecraftforge.fml.common.event.FMLPreInitializationEvent|getModLog|()Lorg/apache/logging/log4j/Logger;
+      @|com\matthyfamily\Inbcraft.java|745|750|event|param|com.matthyfamily.Inbcraft|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
+      @|com\matthyfamily\Inbcraft.java|685|697|EventHandler|class|net.minecraftforge.fml.common.Mod.EventHandler
+      @|com\matthyfamily\Inbcraft.java|711|718|preInit|method|com.matthyfamily.Inbcraft|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+      @|com\matthyfamily\Inbcraft.java|719|744|FMLPreInitializationEvent|class|net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+      @|com\matthyfamily\Inbcraft.java|756|762|System|class|java.lang.System
+      @|com\matthyfamily\Inbcraft.java|763|766|out|field|java.lang.System|out
+      @|com\matthyfamily\Inbcraft.java|767|774|println|method|java.io.PrintStream|println|(Ljava/lang/String;)V
+      @|com\matthyfamily\Inbcraft.java|775|784|Reference|class|com.matthyfamily.Reference
+      @|com\matthyfamily\Inbcraft.java|785|790|MODID|field|com.matthyfamily.Reference|MODID
+      @|com\matthyfamily\Inbcraft.java|808|816|ModItems|class|com.matthyfamily.init.ModItems
+      @|com\matthyfamily\Inbcraft.java|817|821|init|method|com.matthyfamily.init.ModItems|init|()V
    Method End: preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
    Method Start: init(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
-      @|com\matthyfamily\Inbcraft.java|810|815|event|param|com.matthyfamily.Inbcraft|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V|event|0
-      @|com\matthyfamily\Inbcraft.java|753|765|EventHandler|class|net.minecraftforge.fml.common.Mod.EventHandler
-      @|com\matthyfamily\Inbcraft.java|782|786|init|method|com.matthyfamily.Inbcraft|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
-      @|com\matthyfamily\Inbcraft.java|787|809|FMLInitializationEvent|class|net.minecraftforge.fml.common.event.FMLInitializationEvent
-      @|com\matthyfamily\Inbcraft.java|831|837|logger|field|com.matthyfamily.Inbcraft|logger
-      @|com\matthyfamily\Inbcraft.java|838|842|info|method|org.apache.logging.log4j.Logger|info|(Ljava/lang/String;)V
+      @|com\matthyfamily\Inbcraft.java|886|891|event|param|com.matthyfamily.Inbcraft|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V|event|0
+      @|com\matthyfamily\Inbcraft.java|832|844|EventHandler|class|net.minecraftforge.fml.common.Mod.EventHandler
+      @|com\matthyfamily\Inbcraft.java|858|862|init|method|com.matthyfamily.Inbcraft|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+      @|com\matthyfamily\Inbcraft.java|863|885|FMLInitializationEvent|class|net.minecraftforge.fml.common.event.FMLInitializationEvent
+      @|com\matthyfamily\Inbcraft.java|897|903|System|class|java.lang.System
+      @|com\matthyfamily\Inbcraft.java|904|907|out|field|java.lang.System|out
+      @|com\matthyfamily\Inbcraft.java|908|915|println|method|java.io.PrintStream|println|(Ljava/lang/String;)V
+      @|com\matthyfamily\Inbcraft.java|916|925|Reference|class|com.matthyfamily.Reference
+      @|com\matthyfamily\Inbcraft.java|926|931|MODID|field|com.matthyfamily.Reference|MODID
    Method End: init(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+   Method Start: postInit(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V
+      @|com\matthyfamily\Inbcraft.java|1013|1018|event|param|com.matthyfamily.Inbcraft|postInit|(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V|event|0
+      @|com\matthyfamily\Inbcraft.java|951|963|EventHandler|class|net.minecraftforge.fml.common.Mod.EventHandler
+      @|com\matthyfamily\Inbcraft.java|977|985|postInit|method|com.matthyfamily.Inbcraft|postInit|(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V
+      @|com\matthyfamily\Inbcraft.java|986|1012|FMLPostInitializationEvent|class|net.minecraftforge.fml.common.event.FMLPostInitializationEvent
+      @|com\matthyfamily\Inbcraft.java|1024|1030|System|class|java.lang.System
+      @|com\matthyfamily\Inbcraft.java|1031|1034|out|field|java.lang.System|out
+      @|com\matthyfamily\Inbcraft.java|1035|1042|println|method|java.io.PrintStream|println|(Ljava/lang/String;)V
+      @|com\matthyfamily\Inbcraft.java|1043|1052|Reference|class|com.matthyfamily.Reference
+      @|com\matthyfamily\Inbcraft.java|1053|1058|MODID|field|com.matthyfamily.Reference|MODID
+   Method End: postInit(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V
 Class End  : com.matthyfamily.Inbcraft
 endProcessing "com\matthyfamily\Inbcraft.java"
 
-startProcessing "com\matthyfamily\Reference.java" md5: ae847cbf4b836541d027e8ee0333a548
+startProcessing "com\matthyfamily\Reference.java" md5: 0df3d4fc36c9e7e97011e888fff9e6b5
+Cache Hit!
 @|com\matthyfamily\Reference.java|8|24|com.matthyfamily|package|com.matthyfamily|(file)
 Class Start: com.matthyfamily.Reference
    @|com\matthyfamily\Reference.java|40|49|Reference|class|com.matthyfamily.Reference
    @|com\matthyfamily\Reference.java|73|79|String|class|java.lang.String
    @|com\matthyfamily\Reference.java|73|79|String|class|java.lang.String
    @|com\matthyfamily\Reference.java|80|85|MODID|field|com.matthyfamily.Reference|MODID|
-   @|com\matthyfamily\Reference.java|116|122|String|class|java.lang.String
-   @|com\matthyfamily\Reference.java|116|122|String|class|java.lang.String
-   @|com\matthyfamily\Reference.java|123|130|MODNAME|field|com.matthyfamily.Reference|MODNAME|
-   @|com\matthyfamily\Reference.java|186|192|String|class|java.lang.String
-   @|com\matthyfamily\Reference.java|186|192|String|class|java.lang.String
-   @|com\matthyfamily\Reference.java|193|200|VERSION|field|com.matthyfamily.Reference|VERSION|
-   @|com\matthyfamily\Reference.java|231|237|String|class|java.lang.String
-   @|com\matthyfamily\Reference.java|231|237|String|class|java.lang.String
-   @|com\matthyfamily\Reference.java|238|265|ACCEPTED_MINECRAFT_VERSIONS|field|com.matthyfamily.Reference|ACCEPTED_MINECRAFT_VERSIONS|
+   @|com\matthyfamily\Reference.java|117|123|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|117|123|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|124|131|MODNAME|field|com.matthyfamily.Reference|MODNAME|
+   @|com\matthyfamily\Reference.java|167|173|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|167|173|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|174|181|VERSION|field|com.matthyfamily.Reference|VERSION|
+   @|com\matthyfamily\Reference.java|212|218|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|212|218|String|class|java.lang.String
+   @|com\matthyfamily\Reference.java|219|246|ACCEPTED_MINECRAFT_VERSIONS|field|com.matthyfamily.Reference|ACCEPTED_MINECRAFT_VERSIONS|
 Class End  : com.matthyfamily.Reference
 endProcessing "com\matthyfamily\Reference.java"
+
+startProcessing "com\matthyfamily\init\ModItems.java" md5: 49e17175d7ffa12cc765112504023c8f
+Cache Hit!
+@|com\matthyfamily\init\ModItems.java|8|29|com.matthyfamily.init|package|com.matthyfamily.init|(file)
+Class Start: com.matthyfamily.init.ModItems
+   @|com\matthyfamily\init\ModItems.java|1075|1097|Mod.EventBusSubscriber|class|net.minecraftforge.fml.common.Mod.EventBusSubscriber
+   @|com\matthyfamily\init\ModItems.java|1098|1103|modid|method|net.minecraftforge.fml.common.Mod.EventBusSubscriber|modid|()Ljava/lang/String;
+   @|com\matthyfamily\init\ModItems.java|1104|1113|Reference|class|com.matthyfamily.Reference
+   @|com\matthyfamily\init\ModItems.java|1114|1119|MODID|field|com.matthyfamily.Reference|MODID
+   @|com\matthyfamily\init\ModItems.java|1134|1142|ModItems|class|com.matthyfamily.init.ModItems
+   @|com\matthyfamily\init\ModItems.java|1190|1194|Item|class|net.minecraft.item.Item
+   @|com\matthyfamily\init\ModItems.java|1147|1159|ObjectHolder|class|net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder
+   @|com\matthyfamily\init\ModItems.java|1190|1194|Item|class|net.minecraft.item.Item
+   @|com\matthyfamily\init\ModItems.java|1195|1206|corncobname|field|com.matthyfamily.init.ModItems|corncobname|
+   @|com\matthyfamily\init\ModItems.java|1223|1227|Item|class|net.minecraft.item.Item
+   @|com\matthyfamily\init\ModItems.java|1223|1227|Item|class|net.minecraft.item.Item
+   @|com\matthyfamily\init\ModItems.java|1228|1232|Taco|field|com.matthyfamily.init.ModItems|Taco|
+   Method Start: init()V
+      @|com\matthyfamily\init\ModItems.java|1256|1260|init|method|com.matthyfamily.init.ModItems|init|()V
+      @|com\matthyfamily\init\ModItems.java|1267|1271|Taco|field|com.matthyfamily.init.ModItems|Taco
+      @|com\matthyfamily\init\ModItems.java|1278|1292|ItemCustomFood|class|com.matthyfamily.items.ItemCustomFood
+      @|com\matthyfamily\init\ModItems.java|1363|1369|System|class|java.lang.System
+      @|com\matthyfamily\init\ModItems.java|1370|1373|out|field|java.lang.System|out
+      @|com\matthyfamily\init\ModItems.java|1374|1381|println|method|java.io.PrintStream|println|(Ljava/lang/String;)V
+      @|com\matthyfamily\init\ModItems.java|1394|1405|corncobname|field|com.matthyfamily.init.ModItems|corncobname
+   Method End: init()V
+   Method Start: registerItems(Lnet/minecraftforge/event/RegistryEvent$Register;)V
+      @|com\matthyfamily\init\ModItems.java|1492|1497|event|param|com.matthyfamily.init.ModItems|registerItems|(Lnet/minecraftforge/event/RegistryEvent$Register;)V|event|0
+      @|com\matthyfamily\init\ModItems.java|1414|1428|SubscribeEvent|class|net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+      @|com\matthyfamily\init\ModItems.java|1449|1462|registerItems|method|com.matthyfamily.init.ModItems|registerItems|(Lnet/minecraftforge/event/RegistryEvent$Register;)V
+      @|com\matthyfamily\init\ModItems.java|1463|1485|RegistryEvent.Register|class|net.minecraftforge.event.RegistryEvent.Register
+      @|com\matthyfamily\init\ModItems.java|1486|1490|Item|class|net.minecraft.item.Item
+      @|com\matthyfamily\init\ModItems.java|1503|1508|event|param|com.matthyfamily.init.ModItems|registerItems|(Lnet/minecraftforge/event/RegistryEvent$Register;)V|event|0
+      @|com\matthyfamily\init\ModItems.java|1509|1520|getRegistry|method|net.minecraftforge.event.RegistryEvent.Register|getRegistry|()Lnet/minecraftforge/registries/IForgeRegistry;
+      @|com\matthyfamily\init\ModItems.java|1523|1534|registerAll|method|net.minecraftforge.registries.IForgeRegistry|registerAll|([Lnet/minecraftforge/registries/IForgeRegistryEntry;)V
+      @|com\matthyfamily\init\ModItems.java|1535|1539|Taco|field|com.matthyfamily.init.ModItems|Taco
+   Method End: registerItems(Lnet/minecraftforge/event/RegistryEvent$Register;)V
+   Method Start: registerRenders(Lnet/minecraftforge/client/event/ModelRegistryEvent;)V
+      @|com\matthyfamily\init\ModItems.java|1619|1624|event|param|com.matthyfamily.init.ModItems|registerRenders|(Lnet/minecraftforge/client/event/ModelRegistryEvent;)V|event|0
+      @|com\matthyfamily\init\ModItems.java|1549|1563|SubscribeEvent|class|net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+      @|com\matthyfamily\init\ModItems.java|1584|1599|registerRenders|method|com.matthyfamily.init.ModItems|registerRenders|(Lnet/minecraftforge/client/event/ModelRegistryEvent;)V
+      @|com\matthyfamily\init\ModItems.java|1600|1618|ModelRegistryEvent|class|net.minecraftforge.client.event.ModelRegistryEvent
+      @|com\matthyfamily\init\ModItems.java|1630|1644|registerModels|method|com.matthyfamily.init.ModItems|registerModels|(Lnet/minecraft/item/Item;)V
+      @|com\matthyfamily\init\ModItems.java|1645|1649|Taco|field|com.matthyfamily.init.ModItems|Taco
+   Method End: registerRenders(Lnet/minecraftforge/client/event/ModelRegistryEvent;)V
+   Method Start: registerModels(Lnet/minecraft/item/Item;)V
+      @|com\matthyfamily\init\ModItems.java|1700|1704|item|param|com.matthyfamily.init.ModItems|registerModels|(Lnet/minecraft/item/Item;)V|item|0
+      @|com\matthyfamily\init\ModItems.java|1680|1694|registerModels|method|com.matthyfamily.init.ModItems|registerModels|(Lnet/minecraft/item/Item;)V
+      @|com\matthyfamily\init\ModItems.java|1695|1699|Item|class|net.minecraft.item.Item
+      @|com\matthyfamily\init\ModItems.java|1710|1716|System|class|java.lang.System
+      @|com\matthyfamily\init\ModItems.java|1717|1720|out|field|java.lang.System|out
+      @|com\matthyfamily\init\ModItems.java|1721|1728|println|method|java.io.PrintStream|println|(Ljava/lang/String;)V
+      @|com\matthyfamily\init\ModItems.java|1733|1754|ModelResourceLocation|class|net.minecraft.client.renderer.block.model.ModelResourceLocation
+      @|com\matthyfamily\init\ModItems.java|1755|1759|item|param|com.matthyfamily.init.ModItems|registerModels|(Lnet/minecraft/item/Item;)V|item|0
+      @|com\matthyfamily\init\ModItems.java|1760|1775|getRegistryName|method|net.minecraftforge.registries.IForgeRegistryEntry|getRegistryName|()Lnet/minecraft/util/ResourceLocation;
+      @|com\matthyfamily\init\ModItems.java|1800|1804|item|param|com.matthyfamily.init.ModItems|registerModels|(Lnet/minecraft/item/Item;)V|item|0
+      @|com\matthyfamily\init\ModItems.java|1805|1820|getRegistryName|method|net.minecraftforge.registries.IForgeRegistryEntry|getRegistryName|()Lnet/minecraft/util/ResourceLocation;
+      @|com\matthyfamily\init\ModItems.java|1827|1838|ModelLoader|class|net.minecraftforge.client.model.ModelLoader
+      @|com\matthyfamily\init\ModItems.java|1839|1869|setCustomModelResourceLocation|method|net.minecraftforge.client.model.ModelLoader|setCustomModelResourceLocation|(Lnet/minecraft/item/Item;ILnet/minecraft/client/renderer/block/model/ModelResourceLocation;)V
+      @|com\matthyfamily\init\ModItems.java|1870|1874|item|param|com.matthyfamily.init.ModItems|registerModels|(Lnet/minecraft/item/Item;)V|item|0
+      @|com\matthyfamily\init\ModItems.java|1883|1904|ModelResourceLocation|class|net.minecraft.client.renderer.block.model.ModelResourceLocation
+      @|com\matthyfamily\init\ModItems.java|1905|1909|item|param|com.matthyfamily.init.ModItems|registerModels|(Lnet/minecraft/item/Item;)V|item|0
+      @|com\matthyfamily\init\ModItems.java|1910|1925|getRegistryName|method|net.minecraftforge.registries.IForgeRegistryEntry|getRegistryName|()Lnet/minecraft/util/ResourceLocation;
+   Method End: registerModels(Lnet/minecraft/item/Item;)V
+Class End  : com.matthyfamily.init.ModItems
+endProcessing "com\matthyfamily\init\ModItems.java"
+
+startProcessing "com\matthyfamily\items\ItemBasic.java" md5: 9ac6100e2cfbe0b21a8dc93dd1670d04
+Cache Hit!
+@|com\matthyfamily\items\ItemBasic.java|8|30|com.matthyfamily.items|package|com.matthyfamily.items|(file)
+Class Start: com.matthyfamily.items.ItemBasic
+   @|com\matthyfamily\items\ItemBasic.java|76|85|ItemBasic|class|com.matthyfamily.items.ItemBasic
+   @|com\matthyfamily\items\ItemBasic.java|94|98|Item|class|net.minecraft.item.Item
+   Method Start: ItemBasic(Ljava/lang/String;)V
+      @|com\matthyfamily\items\ItemBasic.java|128|132|name|param|com.matthyfamily.items.ItemBasic|ItemBasic|(Ljava/lang/String;)V|name|0
+      @|com\matthyfamily\items\ItemBasic.java|111|120|ItemBasic|method|com.matthyfamily.items.ItemBasic|ItemBasic|(Ljava/lang/String;)V
+      @|com\matthyfamily\items\ItemBasic.java|121|127|String|class|java.lang.String
+      @|com\matthyfamily\items\ItemBasic.java|138|155|setTranslationKey|method|net.minecraft.item.Item|setTranslationKey|(Ljava/lang/String;)Lnet/minecraft/item/Item;
+      @|com\matthyfamily\items\ItemBasic.java|156|160|name|param|com.matthyfamily.items.ItemBasic|ItemBasic|(Ljava/lang/String;)V|name|0
+      @|com\matthyfamily\items\ItemBasic.java|165|180|setRegistryName|method|net.minecraftforge.registries.IForgeRegistryEntry.Impl|setRegistryName|(Ljava/lang/String;)Lnet/minecraftforge/registries/IForgeRegistryEntry;
+      @|com\matthyfamily\items\ItemBasic.java|181|185|name|param|com.matthyfamily.items.ItemBasic|ItemBasic|(Ljava/lang/String;)V|name|0
+   Method End: ItemBasic(Ljava/lang/String;)V
+Class End  : com.matthyfamily.items.ItemBasic
+endProcessing "com\matthyfamily\items\ItemBasic.java"
+
+startProcessing "com\matthyfamily\items\ItemCustomFood.java" md5: 7ae15cc8fc48612c1d86ada8f8c00f6a
+Cache Hit!
+@|com\matthyfamily\items\ItemCustomFood.java|8|30|com.matthyfamily.items|package|com.matthyfamily.items|(file)
+Class Start: com.matthyfamily.items.ItemCustomFood
+   @|com\matthyfamily\items\ItemCustomFood.java|83|97|ItemCustomFood|class|com.matthyfamily.items.ItemCustomFood
+   @|com\matthyfamily\items\ItemCustomFood.java|106|114|ItemFood|class|net.minecraft.item.ItemFood
+   Method Start: ItemCustomFood(Ljava/lang/String;IFZ)V
+      @|com\matthyfamily\items\ItemCustomFood.java|148|152|name|param|com.matthyfamily.items.ItemCustomFood|ItemCustomFood|(Ljava/lang/String;IFZ)V|name|0
+      @|com\matthyfamily\items\ItemCustomFood.java|158|164|amount|param|com.matthyfamily.items.ItemCustomFood|ItemCustomFood|(Ljava/lang/String;IFZ)V|amount|1
+      @|com\matthyfamily\items\ItemCustomFood.java|172|182|saturation|param|com.matthyfamily.items.ItemCustomFood|ItemCustomFood|(Ljava/lang/String;IFZ)V|saturation|2
+      @|com\matthyfamily\items\ItemCustomFood.java|192|202|isWolfFood|param|com.matthyfamily.items.ItemCustomFood|ItemCustomFood|(Ljava/lang/String;IFZ)V|isWolfFood|3
+      @|com\matthyfamily\items\ItemCustomFood.java|126|140|ItemCustomFood|method|com.matthyfamily.items.ItemCustomFood|ItemCustomFood|(Ljava/lang/String;IFZ)V
+      @|com\matthyfamily\items\ItemCustomFood.java|141|147|String|class|java.lang.String
+      @|com\matthyfamily\items\ItemCustomFood.java|214|220|amount|param|com.matthyfamily.items.ItemCustomFood|ItemCustomFood|(Ljava/lang/String;IFZ)V|amount|1
+      @|com\matthyfamily\items\ItemCustomFood.java|222|232|saturation|param|com.matthyfamily.items.ItemCustomFood|ItemCustomFood|(Ljava/lang/String;IFZ)V|saturation|2
+      @|com\matthyfamily\items\ItemCustomFood.java|234|244|isWolfFood|param|com.matthyfamily.items.ItemCustomFood|ItemCustomFood|(Ljava/lang/String;IFZ)V|isWolfFood|3
+      @|com\matthyfamily\items\ItemCustomFood.java|249|266|setTranslationKey|method|net.minecraft.item.Item|setTranslationKey|(Ljava/lang/String;)Lnet/minecraft/item/Item;
+      @|com\matthyfamily\items\ItemCustomFood.java|267|271|name|param|com.matthyfamily.items.ItemCustomFood|ItemCustomFood|(Ljava/lang/String;IFZ)V|name|0
+      @|com\matthyfamily\items\ItemCustomFood.java|276|291|setRegistryName|method|net.minecraftforge.registries.IForgeRegistryEntry.Impl|setRegistryName|(Ljava/lang/String;)Lnet/minecraftforge/registries/IForgeRegistryEntry;
+      @|com\matthyfamily\items\ItemCustomFood.java|292|296|name|param|com.matthyfamily.items.ItemCustomFood|ItemCustomFood|(Ljava/lang/String;IFZ)V|name|0
+   Method End: ItemCustomFood(Ljava/lang/String;IFZ)V
+Class End  : com.matthyfamily.items.ItemCustomFood
+endProcessing "com\matthyfamily\items\ItemCustomFood.java"
 

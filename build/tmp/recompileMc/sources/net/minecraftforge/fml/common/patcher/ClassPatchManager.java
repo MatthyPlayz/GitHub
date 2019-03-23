@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,9 +33,9 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Pack200;
 import java.util.regex.Pattern;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.repackage.com.nothome.delta.GDiffPatcher;
 import LZMA.LzmaInputStream;
@@ -50,11 +50,10 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
 public class ClassPatchManager {
-    //Must be ABOVE INSTANCE so they get set in time for the constructor.
+    public static final ClassPatchManager INSTANCE = new ClassPatchManager();
+
     public static final boolean dumpPatched = Boolean.parseBoolean(System.getProperty("fml.dumpPatchedClasses", "false"));
     public static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("fml.debugClassPatchManager", "false"));
-
-    public static final ClassPatchManager INSTANCE = new ClassPatchManager();
 
     private GDiffPatcher patcher = new GDiffPatcher();
     private ListMultimap<String, ClassPatch> patches;
@@ -172,7 +171,7 @@ public class ClassPatchManager {
             InputStream binpatchesCompressed = getClass().getResourceAsStream("/binpatches.pack.lzma");
             if (binpatchesCompressed==null)
             {
-                if (!FMLLaunchHandler.isDeobfuscatedEnvironment())
+                if (!((Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment")))
                 {
                     FMLLog.log.fatal("The binary patch set is missing, things are not going to work!");
                 }

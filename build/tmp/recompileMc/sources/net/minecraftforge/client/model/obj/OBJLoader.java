@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,7 +33,6 @@ import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.common.FMLLog;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
 
 /*
@@ -66,48 +65,41 @@ public enum OBJLoader implements ICustomModelLoader {
     @Override
     public boolean accepts(ResourceLocation modelLocation)
     {
-        return enabledDomains.contains(modelLocation.getResourceDomain()) && modelLocation.getResourcePath().endsWith(".obj");
+        return enabledDomains.contains(modelLocation.getNamespace()) && modelLocation.getPath().endsWith(".obj");
     }
 
     @Override
     public IModel loadModel(ResourceLocation modelLocation) throws Exception
     {
-        ResourceLocation file = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
+        ResourceLocation file = new ResourceLocation(modelLocation.getNamespace(), modelLocation.getPath());
         if (!cache.containsKey(file))
         {
-            IResource resource = null;
+            IResource resource;
             try
             {
-                try
-                {
-                    resource = manager.getResource(file);
-                }
-                catch (FileNotFoundException e)
-                {
-                    if (modelLocation.getResourcePath().startsWith("models/block/"))
-                        resource = manager.getResource(new ResourceLocation(file.getResourceDomain(), "models/item/" + file.getResourcePath().substring("models/block/".length())));
-                    else if (modelLocation.getResourcePath().startsWith("models/item/"))
-                        resource = manager.getResource(new ResourceLocation(file.getResourceDomain(), "models/block/" + file.getResourcePath().substring("models/item/".length())));
-                    else throw e;
-                }
-                OBJModel.Parser parser = new OBJModel.Parser(resource, manager);
-                OBJModel model = null;
-                try
-                {
-                    model = parser.parse();
-                }
-                catch (Exception e)
-                {
-                    errors.put(modelLocation, e);
-                }
-                finally
-                {
-                    cache.put(modelLocation, model);
-                }
+                resource = manager.getResource(file);
+            }
+            catch (FileNotFoundException e)
+            {
+                if (modelLocation.getPath().startsWith("models/block/"))
+                    resource = manager.getResource(new ResourceLocation(file.getNamespace(), "models/item/" + file.getPath().substring("models/block/".length())));
+                else if (modelLocation.getPath().startsWith("models/item/"))
+                    resource = manager.getResource(new ResourceLocation(file.getNamespace(), "models/block/" + file.getPath().substring("models/item/".length())));
+                else throw e;
+            }
+            OBJModel.Parser parser = new OBJModel.Parser(resource, manager);
+            OBJModel model = null;
+            try
+            {
+                model = parser.parse();
+            }
+            catch (Exception e)
+            {
+                errors.put(modelLocation, e);
             }
             finally
             {
-                IOUtils.closeQuietly(resource);
+                cache.put(modelLocation, model);
             }
         }
         OBJModel model = cache.get(file);

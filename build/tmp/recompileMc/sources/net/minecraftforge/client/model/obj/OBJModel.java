@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -119,9 +119,9 @@ public class OBJModel implements IModel
         TextureAtlasSprite missing = bakedTextureGetter.apply(new ResourceLocation("missingno"));
         for (Map.Entry<String, Material> e : matLib.materials.entrySet())
         {
-            if (e.getValue().getTexture().getTextureLocation().getResourcePath().startsWith("#"))
+            if (e.getValue().getTexture().getTextureLocation().getPath().startsWith("#"))
             {
-                FMLLog.log.fatal("OBJLoader: Unresolved texture '{}' for obj model '{}'", e.getValue().getTexture().getTextureLocation().getResourcePath(), modelLocation);
+                FMLLog.log.fatal("OBJLoader: Unresolved texture '{}' for obj model '{}'", e.getValue().getTexture().getTextureLocation().getPath(), modelLocation);
                 builder.put(e.getKey(), missing);
             }
             else
@@ -252,14 +252,7 @@ public class OBJModel implements IModel
                     }
                     else if (key.equalsIgnoreCase("usemtl"))
                     {
-                        if (this.materialLibrary.materials.containsKey(data))
-                        {
-                            material = this.materialLibrary.materials.get(data);
-                        }
-                        else
-                        {
-                            FMLLog.log.error("OBJModel.Parser: (Model: '{}', Line: {}) material '{}' referenced but was not found", objFrom, lineNum, data);
-                        }
+                        material = this.materialLibrary.materials.get(data);
                         usemtlCounter++;
                     }
                     else if (key.equalsIgnoreCase("v")) // Vertices: x y z [w] - w Defaults to 1.0
@@ -502,9 +495,9 @@ public class OBJModel implements IModel
             this.materials.clear();
             boolean hasSetTexture = false;
             boolean hasSetColor = false;
-            String domain = from.getResourceDomain();
+            String domain = from.getNamespace();
             if (!path.contains("/"))
-                path = from.getResourcePath().substring(0, from.getResourcePath().lastIndexOf("/") + 1) + path;
+                path = from.getPath().substring(0, from.getPath().lastIndexOf("/") + 1) + path;
             mtlStream = new InputStreamReader(manager.getResource(new ResourceLocation(domain, path)).getInputStream(), StandardCharsets.UTF_8);
             mtlReader = new BufferedReader(mtlStream);
 

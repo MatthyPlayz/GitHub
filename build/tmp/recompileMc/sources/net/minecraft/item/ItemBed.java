@@ -19,6 +19,8 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemBed extends Item
 {
@@ -54,7 +56,7 @@ public class ItemBed extends Item
             }
 
             int i = MathHelper.floor((double)(player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-            EnumFacing enumfacing = EnumFacing.getHorizontal(i);
+            EnumFacing enumfacing = EnumFacing.byHorizontalIndex(i);
             BlockPos blockpos = pos.offset(enumfacing);
             ItemStack itemstack = player.getHeldItem(hand);
 
@@ -113,9 +115,9 @@ public class ItemBed extends Item
      * Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have
      * different names based on their damage or NBT.
      */
-    public String getUnlocalizedName(ItemStack stack)
+    public String getTranslationKey(ItemStack stack)
     {
-        return super.getUnlocalizedName() + "." + EnumDyeColor.byMetadata(stack.getMetadata()).getUnlocalizedName();
+        return super.getTranslationKey() + "." + EnumDyeColor.byMetadata(stack.getMetadata()).getTranslationKey();
     }
 
     /**

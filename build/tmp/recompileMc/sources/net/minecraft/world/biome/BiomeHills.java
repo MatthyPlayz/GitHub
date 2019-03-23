@@ -90,8 +90,7 @@ public class BiomeHills extends Biome
             int count = 3 + rand.nextInt(6);
             for (int i = 0; i < count; i++)
             {
-                int offset = net.minecraftforge.common.ForgeModContainer.fixVanillaCascading ? 8 : 0; // MC-114332
-                BlockPos blockpos = pos.add(rand.nextInt(16) + offset, rand.nextInt(28) + 4, rand.nextInt(16) + offset);
+                BlockPos blockpos = pos.add(rand.nextInt(16), rand.nextInt(28) + 4, rand.nextInt(16));
 
                 net.minecraft.block.state.IBlockState state = worldIn.getBlockState(blockpos);
                 if (state.getBlock().isReplaceableOreGen(state, worldIn, blockpos, net.minecraft.block.state.pattern.BlockMatcher.forBlock(Blocks.STONE)))

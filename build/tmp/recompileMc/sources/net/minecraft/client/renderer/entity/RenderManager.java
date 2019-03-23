@@ -336,9 +336,9 @@ public class RenderManager
         return this.debugBoundingBox;
     }
 
-    public boolean isRenderMultipass(Entity p_188390_1_)
+    public boolean isRenderMultipass(Entity entityIn)
     {
-        return this.getEntityRenderObject(p_188390_1_).isMultipass();
+        return this.getEntityRenderObject(entityIn).isMultipass();
     }
 
     public boolean shouldRender(Entity entityIn, ICamera camera, double camX, double camY, double camZ)
@@ -433,22 +433,22 @@ public class RenderManager
         }
     }
 
-    public void renderMultipass(Entity p_188389_1_, float p_188389_2_)
+    public void renderMultipass(Entity entityIn, float partialTicks)
     {
-        if (p_188389_1_.ticksExisted == 0)
+        if (entityIn.ticksExisted == 0)
         {
-            p_188389_1_.lastTickPosX = p_188389_1_.posX;
-            p_188389_1_.lastTickPosY = p_188389_1_.posY;
-            p_188389_1_.lastTickPosZ = p_188389_1_.posZ;
+            entityIn.lastTickPosX = entityIn.posX;
+            entityIn.lastTickPosY = entityIn.posY;
+            entityIn.lastTickPosZ = entityIn.posZ;
         }
 
-        double d0 = p_188389_1_.lastTickPosX + (p_188389_1_.posX - p_188389_1_.lastTickPosX) * (double)p_188389_2_;
-        double d1 = p_188389_1_.lastTickPosY + (p_188389_1_.posY - p_188389_1_.lastTickPosY) * (double)p_188389_2_;
-        double d2 = p_188389_1_.lastTickPosZ + (p_188389_1_.posZ - p_188389_1_.lastTickPosZ) * (double)p_188389_2_;
-        float f = p_188389_1_.prevRotationYaw + (p_188389_1_.rotationYaw - p_188389_1_.prevRotationYaw) * p_188389_2_;
-        int i = p_188389_1_.getBrightnessForRender();
+        double d0 = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double)partialTicks;
+        double d1 = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double)partialTicks;
+        double d2 = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double)partialTicks;
+        float f = entityIn.prevRotationYaw + (entityIn.rotationYaw - entityIn.prevRotationYaw) * partialTicks;
+        int i = entityIn.getBrightnessForRender();
 
-        if (p_188389_1_.isBurning())
+        if (entityIn.isBurning())
         {
             i = 15728880;
         }
@@ -457,11 +457,11 @@ public class RenderManager
         int k = i / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        Render<Entity> render = this.<Entity>getEntityRenderObject(p_188389_1_);
+        Render<Entity> render = this.<Entity>getEntityRenderObject(entityIn);
 
         if (render != null && this.renderEngine != null)
         {
-            render.renderMultipass(p_188389_1_, d0 - this.renderPosX, d1 - this.renderPosY, d2 - this.renderPosZ, f, p_188389_2_);
+            render.renderMultipass(entityIn, d0 - this.renderPosX, d1 - this.renderPosY, d2 - this.renderPosZ, f, partialTicks);
         }
     }
 

@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,7 +16,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
 package net.minecraftforge.oredict;
 
 import javax.annotation.Nonnull;
@@ -30,13 +29,14 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class OreIngredient extends Ingredient
 {
     private NonNullList<ItemStack> ores;
     private IntList itemIds = null;
     private ItemStack[] array = null;
-    private int lastSizeA = -1, lastSizeL = -1;
 
     public OreIngredient(String ore)
     {
@@ -48,7 +48,7 @@ public class OreIngredient extends Ingredient
     @Nonnull
     public ItemStack[] getMatchingStacks()
     {
-        if (array == null || this.lastSizeA != ores.size())
+        if (array == null || this.array.length != ores.size())
         {
             NonNullList<ItemStack> lst = NonNullList.create();
             for (ItemStack itemstack : this.ores)
@@ -59,7 +59,6 @@ public class OreIngredient extends Ingredient
                     lst.add(itemstack);
             }
             this.array = lst.toArray(new ItemStack[lst.size()]);
-            this.lastSizeA = ores.size();
         }
         return this.array;
     }
@@ -67,9 +66,10 @@ public class OreIngredient extends Ingredient
 
     @Override
     @Nonnull
+    @SideOnly(Side.CLIENT)
     public IntList getValidItemStacksPacked()
     {
-        if (this.itemIds == null || this.lastSizeL != ores.size())
+        if (this.itemIds == null || this.itemIds.size() != ores.size())
         {
             this.itemIds = new IntArrayList(this.ores.size());
 
@@ -89,7 +89,6 @@ public class OreIngredient extends Ingredient
             }
 
             this.itemIds.sort(IntComparators.NATURAL_COMPARATOR);
-            this.lastSizeL = ores.size();
         }
 
         return this.itemIds;
@@ -113,12 +112,5 @@ public class OreIngredient extends Ingredient
     protected void invalidate()
     {
         this.itemIds = null;
-        this.array = null;
-    }
-
-    @Override
-    public boolean isSimple()
-    {
-        return true;
     }
 }

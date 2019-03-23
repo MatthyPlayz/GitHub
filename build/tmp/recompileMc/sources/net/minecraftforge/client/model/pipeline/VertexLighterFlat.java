@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-import java.util.Objects;
+import com.google.common.base.Objects;
 
 public class VertexLighterFlat extends QuadGatheringTransformer
 {
@@ -46,8 +46,6 @@ public class VertexLighterFlat extends QuadGatheringTransformer
     protected int colorIndex = -1;
     protected int lightmapIndex = -1;
 
-    protected VertexFormat baseFormat;
-
     public VertexLighterFlat(BlockColors colors)
     {
         this.blockInfo = new BlockInfo(colors);
@@ -57,11 +55,9 @@ public class VertexLighterFlat extends QuadGatheringTransformer
     public void setParent(IVertexConsumer parent)
     {
         super.setParent(parent);
-        setVertexFormat(parent.getVertexFormat());
-    }
-
-    private void updateIndices()
-    {
+        VertexFormat format = getVertexFormat(parent);
+        if(Objects.equal(format, getVertexFormat())) return;
+        setVertexFormat(format);
         for(int i = 0; i < getVertexFormat().getElementCount(); i++)
         {
             switch(getVertexFormat().getElement(i).getUsage())
@@ -98,19 +94,13 @@ public class VertexLighterFlat extends QuadGatheringTransformer
         }
     }
 
-    @Override
-    public void setVertexFormat(VertexFormat format)
+    private static VertexFormat getVertexFormat(IVertexConsumer parent)
     {
-        if (Objects.equals(format, baseFormat)) return;
-        baseFormat = format;
-        super.setVertexFormat(withNormal(format));
-        updateIndices();
-    }
-
-    private static VertexFormat withNormal(VertexFormat format)
-    {
-        if (format == null || format.hasNormal()) return format;
-        return new VertexFormat(format).addElement(NORMAL_4F);
+        VertexFormat format = parent.getVertexFormat();
+        if(format == null || format.hasNormal()) return format;
+        format = new VertexFormat(format);
+        format.addElement(NORMAL_4F);
+        return format;
     }
 
     @Override
@@ -121,14 +111,14 @@ public class VertexLighterFlat extends QuadGatheringTransformer
         float[][] lightmap = quadData[lightmapIndex];
         float[][] color = quadData[colorIndex];
 
-        if (dataLength[normalIndex] >= 3
-            && (quadData[normalIndex][0][0] != -1
-            ||  quadData[normalIndex][0][1] != -1
-            ||  quadData[normalIndex][0][2] != -1))
+        // If all three normal values are either -1 or 0, normals must be generated
+        if(quadData[normalIndex][0][0] != quadData[normalIndex][0][1] ||
+            quadData[normalIndex][0][1] != quadData[normalIndex][0][2] ||
+           (quadData[normalIndex][0][0] != -1 && quadData[normalIndex][0][0] != 0))
         {
             normal = quadData[normalIndex];
         }
-        else // normals must be generated
+        else
         {
             normal = new float[4][4];
             Vector3f v1 = new Vector3f(position[3]);
@@ -241,21 +231,20 @@ public class VertexLighterFlat extends QuadGatheringTransformer
 
     protected void updateLightmap(float[] normal, float[] lightmap, float x, float y, float z)
     {
-        final float e1 = 1f - 1e-2f;
-        final float e2 = 0.95f;
+        float e1 = 1 - 1e-2f;
+        float e2 = 0.95f;
+        BlockPos pos = blockInfo.getBlockPos();
 
-        boolean full = blockInfo.isFullCube();
-        EnumFacing side = null;
+        boolean full = blockInfo.getState().isFullCube();
 
-             if((full || y < -e1) && normal[1] < -e2) side = EnumFacing.DOWN;
-        else if((full || y >  e1) && normal[1] >  e2) side = EnumFacing.UP;
-        else if((full || z < -e1) && normal[2] < -e2) side = EnumFacing.NORTH;
-        else if((full || z >  e1) && normal[2] >  e2) side = EnumFacing.SOUTH;
-        else if((full || x < -e1) && normal[0] < -e2) side = EnumFacing.WEST;
-        else if((full || x >  e1) && normal[0] >  e2) side = EnumFacing.EAST;
+        if((full || y < -e1) && normal[1] < -e2) pos = pos.down();
+        if((full || y >  e1) && normal[1] >  e2) pos = pos.up();
+        if((full || z < -e1) && normal[2] < -e2) pos = pos.north();
+        if((full || z >  e1) && normal[2] >  e2) pos = pos.south();
+        if((full || x < -e1) && normal[0] < -e2) pos = pos.west();
+        if((full || x >  e1) && normal[0] >  e2) pos = pos.east();
 
-        int i = side == null ? 0 : side.ordinal() + 1;
-        int brightness = blockInfo.getPackedLight()[i];
+        int brightness = blockInfo.getState().getPackedLightmapCoords(blockInfo.getWorld(), pos);
 
         lightmap[0] = ((float)((brightness >> 0x04) & 0xF) * 0x20) / 0xFFFF;
         lightmap[1] = ((float)((brightness >> 0x14) & 0xF) * 0x20) / 0xFFFF;
@@ -302,14 +291,8 @@ public class VertexLighterFlat extends QuadGatheringTransformer
         blockInfo.setBlockPos(blockPos);
     }
 
-    public void resetBlockInfo()
-    {
-        blockInfo.reset();
-    }
-
     public void updateBlockInfo()
     {
         blockInfo.updateShift();
-        blockInfo.updateFlatLighting();
     }
 }

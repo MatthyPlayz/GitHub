@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,12 +38,10 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
     private List<AddCallback<T>> addCallback = Lists.newArrayList();
     private List<ClearCallback<T>> clearCallback = Lists.newArrayList();
     private List<CreateCallback<T>> createCallback = Lists.newArrayList();
-    private List<ValidateCallback<T>> validateCallback = Lists.newArrayList();
     private boolean saveToDisc = true;
     private boolean allowOverrides = true;
     private boolean allowModifications = false;
     private DummyFactory<T> dummyFactory;
-    private MissingFactory<T> missingFactory;
 
     public RegistryBuilder<T> setName(ResourceLocation name)
     {
@@ -84,12 +82,8 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
             this.add((ClearCallback<T>)inst);
         if (inst instanceof CreateCallback)
             this.add((CreateCallback<T>)inst);
-        if (inst instanceof ValidateCallback)
-            this.add((ValidateCallback<T>)inst);
         if (inst instanceof DummyFactory)
             this.set((DummyFactory<T>)inst);
-        if (inst instanceof MissingFactory)
-            this.set((MissingFactory<T>)inst);
         return this;
     }
 
@@ -111,21 +105,9 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
         return this;
     }
 
-    public RegistryBuilder<T> add(ValidateCallback<T> validate)
-    {
-        this.validateCallback.add(validate);
-        return this;
-    }
-
     public RegistryBuilder<T> set(DummyFactory<T> factory)
     {
         this.dummyFactory = factory;
-        return this;
-    }
-
-    public RegistryBuilder<T> set(MissingFactory<T> missing)
-    {
-        this.missingFactory = missing;
         return this;
     }
 
@@ -150,7 +132,7 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
     public IForgeRegistry<T> create()
     {
         return RegistryManager.ACTIVE.createRegistry(registryName, registryType, optionalDefaultKey, minId, maxId,
-                getAdd(), getClear(), getCreate(), getValidate(), saveToDisc, allowOverrides, allowModifications, dummyFactory, missingFactory);
+                getAdd(), getClear(), getCreate(), saveToDisc, allowOverrides, allowModifications, dummyFactory);
     }
 
     @Nullable
@@ -195,21 +177,6 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
         {
             for (CreateCallback<T> cb : this.createCallback)
                 cb.onCreate(owner, stage);
-        };
-    }
-
-    @Nullable
-    private ValidateCallback<T> getValidate()
-    {
-        if (validateCallback.isEmpty())
-            return null;
-        if (validateCallback.size() == 1)
-            return validateCallback.get(0);
-
-        return (owner, stage, id, key, obj) ->
-        {
-            for (ValidateCallback<T> cb : this.validateCallback)
-                cb.onValidate(owner, stage, id, key, obj);
         };
     }
 }

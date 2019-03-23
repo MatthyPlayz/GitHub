@@ -21,17 +21,17 @@ public class C00Handshake implements Packet<INetHandlerHandshakeServer>
     }
 
     @SideOnly(Side.CLIENT)
-    public C00Handshake(String p_i47613_1_, int p_i47613_2_, EnumConnectionState p_i47613_3_)
+    public C00Handshake(int version, String ip, int port, EnumConnectionState requestedState)
     {
-        this.protocolVersion = 340;
-        this.ip = p_i47613_1_;
-        this.port = p_i47613_2_;
-        this.requestedState = p_i47613_3_;
+        this.protocolVersion = version;
+        this.ip = ip;
+        this.port = port;
+        this.requestedState = requestedState;
     }
 
-    public C00Handshake(String address, int port, EnumConnectionState state, boolean addFMLMarker)
+    public C00Handshake(int protocol, String address, int port, EnumConnectionState state, boolean addFMLMarker)
     {
-        this(address, port, state);
+        this(protocol, address, port, state);
         this.hasFMLMarker = addFMLMarker;
     }
 

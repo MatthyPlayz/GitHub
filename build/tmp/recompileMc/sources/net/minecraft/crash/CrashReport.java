@@ -56,7 +56,7 @@ public class CrashReport
         {
             public String call()
             {
-                return "1.12.2";
+                return "1.12";
             }
         });
         this.systemDetailsCategory.addDetail("Operating System", new ICrashReportDetail<String>()
@@ -231,6 +231,7 @@ public class CrashReport
     {
         StringBuilder stringbuilder = new StringBuilder();
         stringbuilder.append("---- Minecraft Crash Report ----\n");
+        net.minecraftforge.fml.common.asm.transformers.BlamingTransformer.onCrash(stringbuilder);
         net.minecraftforge.fml.relauncher.CoreModManager.onCrash(stringbuilder);
         stringbuilder.append("// ");
         stringbuilder.append(getWittyComment());

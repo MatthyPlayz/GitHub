@@ -455,7 +455,7 @@ public class NBTTagCompound extends NBTBase
             {
                 NBTTagList nbttaglist = (NBTTagList)this.tagMap.get(key);
 
-                if (!nbttaglist.hasNoTags() && nbttaglist.getTagType() != type)
+                if (!nbttaglist.isEmpty() && nbttaglist.getTagType() != type)
                 {
                     return new NBTTagList();
                 }
@@ -516,7 +516,7 @@ public class NBTTagCompound extends NBTBase
     /**
      * Return whether this compound has no tags.
      */
-    public boolean hasNoTags()
+    public boolean isEmpty()
     {
         return this.tagMap.isEmpty();
     }
@@ -596,7 +596,7 @@ public class NBTTagCompound extends NBTBase
     static NBTBase readNBT(byte id, String key, DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException
     {
         sizeTracker.read(32); //Forge: 4 extra bytes for the object allocation.
-        NBTBase nbtbase = NBTBase.createNewByType(id);
+        NBTBase nbtbase = NBTBase.create(id);
 
         try
         {

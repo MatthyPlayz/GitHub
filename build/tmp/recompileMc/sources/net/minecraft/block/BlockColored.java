@@ -12,6 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockColored extends Block
 {
@@ -46,6 +48,8 @@ public class BlockColored extends Block
 
     /**
      * Get the MapColor for this Block and the given BlockState
+     * @deprecated call via {@link IBlockState#getMapColor(IBlockAccess,BlockPos)} whenever possible.
+     * Implementing/overriding is fine.
      */
     public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {

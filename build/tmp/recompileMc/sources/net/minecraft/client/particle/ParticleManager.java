@@ -205,11 +205,11 @@ public class ParticleManager
 
     private void updateEffectLayer(int layer)
     {
-        this.world.profiler.startSection(String.valueOf(layer));
+        this.world.profiler.startSection(layer + "");
 
         for (int i = 0; i < 2; ++i)
         {
-            this.world.profiler.startSection(String.valueOf(i));
+            this.world.profiler.startSection(i + "");
             this.tickParticleList(this.fxLayers[layer][i]);
             this.world.profiler.endSection();
         }

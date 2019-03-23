@@ -32,6 +32,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemMonsterPlacer extends Item
 {
@@ -42,7 +44,7 @@ public class ItemMonsterPlacer extends Item
 
     public String getItemStackDisplayName(ItemStack stack)
     {
-        String s = ("" + I18n.translateToLocal(this.getUnlocalizedName() + ".name")).trim();
+        String s = ("" + I18n.translateToLocal(this.getTranslationKey() + ".name")).trim();
         String s1 = EntityList.getTranslationName(getNamedIdFrom(stack));
 
         if (s1 != null)

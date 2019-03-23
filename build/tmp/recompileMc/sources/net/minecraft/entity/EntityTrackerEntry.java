@@ -72,7 +72,9 @@ public class EntityTrackerEntry
     private static final Logger LOGGER = LogManager.getLogger();
     /** The entity that this EntityTrackerEntry tracks. */
     private final Entity trackedEntity;
+    /** Track distance in blocks */
     private final int range;
+    /** Max track distance, in blocks */
     private int maxRange;
     /** check for sync when ticks % updateFrequency==0 */
     private final int updateFrequency;
@@ -170,13 +172,13 @@ public class EntityTrackerEntry
 
             if (itemstack.getItem() instanceof ItemMap)
             {
-                MapData mapdata = ((ItemMap) itemstack.getItem()).getMapData(itemstack, this.trackedEntity.world);
+                MapData mapdata = Items.FILLED_MAP.getMapData(itemstack, this.trackedEntity.world);
 
                 for (EntityPlayer entityplayer : players)
                 {
                     EntityPlayerMP entityplayermp = (EntityPlayerMP)entityplayer;
                     mapdata.updateVisiblePlayers(entityplayermp, itemstack);
-                    Packet<?> packet = ((ItemMap) itemstack.getItem()).createMapDataPacket(itemstack, this.trackedEntity.world, entityplayermp);
+                    Packet<?> packet = Items.FILLED_MAP.createMapDataPacket(itemstack, this.trackedEntity.world, entityplayermp);
 
                     if (packet != null)
                     {
@@ -700,6 +702,11 @@ public class EntityTrackerEntry
         return this.trackedEntity;
     }
 
+    /**
+     * Sets the "max track distance" for this entity
+     *  
+     * @param maxRangeIn Max track distance, in blocks
+     */
     public void setMaxRange(int maxRangeIn)
     {
         this.maxRange = maxRangeIn;

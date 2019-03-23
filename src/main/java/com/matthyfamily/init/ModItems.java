@@ -30,14 +30,6 @@ public class ModItems {
 	@ObjectHolder("simplecorn:corncob")
 	static Item corncobname = null;
 	static Item Taco;
-	static Object[] craftTaco = {
-			" # ",
-	        "#CO",
-	        "CCC",
-	        Character.valueOf('#'), Items.COOKED_BEEF,
-	        Character.valueOf('C'), corncobname,
-	        Character.valueOf('O'), Blocks.LEAVES
-	};
 	
 	public static void init() {
 		Taco = new ItemCustomFood("taco", 4, 4, false); // goes name, amt, saturation, eaten by dogs?
@@ -52,7 +44,7 @@ public class ModItems {
 	@SubscribeEvent
 	public static void registerRenders(ModelRegistryEvent event) {
 		registerModels(Taco);
-		GameRegistry.addShapedRecipe(new ResourceLocation("inbc:taco"), null, new ItemStack(Taco, 1), craftTaco);
+		
 	}
 	
 	public static void registerModels(Item item) {

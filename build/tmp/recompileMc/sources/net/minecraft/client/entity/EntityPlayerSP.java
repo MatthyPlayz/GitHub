@@ -17,7 +17,6 @@ import net.minecraft.client.gui.GuiScreenBook;
 import net.minecraft.client.gui.inventory.GuiBeacon;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiDispenser;
 import net.minecraft.client.gui.inventory.GuiEditCommandBlockMinecart;
@@ -168,7 +167,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        net.minecraftforge.common.ForgeHooks.onPlayerAttack(this, source, amount);
+        net.minecraftforge.common.ForgeHooks.onLivingAttack(this, source, amount);
         return false;
     }
 
@@ -932,11 +931,6 @@ public class EntityPlayerSP extends AbstractClientPlayer
         {
             if (this.mc.currentScreen != null && !this.mc.currentScreen.doesGuiPauseGame())
             {
-                if (this.mc.currentScreen instanceof GuiContainer)
-                {
-                    this.closeScreen();
-                }
-
                 this.mc.displayGuiScreen((GuiScreen)null);
             }
 
@@ -986,7 +980,6 @@ public class EntityPlayerSP extends AbstractClientPlayer
         float f = 0.8F;
         boolean flag2 = this.movementInput.moveForward >= 0.8F;
         this.movementInput.updatePlayerMoveState();
-        net.minecraftforge.client.ForgeHooksClient.onInputUpdate(this, this.movementInput);
         this.mc.getTutorial().handleMovement(this.movementInput);
 
         if (this.isHandActive() && !this.isRiding())
@@ -1006,13 +999,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
         }
 
         AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
-        net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent event = new net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent(this, axisalignedbb);
-        if(!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) { axisalignedbb = event.getEntityBoundingBox();
         this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ + (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ - (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ - (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ + (double)this.width * 0.35D);
-        }
         boolean flag4 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
 
         if (this.onGround && !flag1 && !flag2 && this.movementInput.moveForward >= 0.8F && !this.isSprinting() && flag4 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS))
@@ -1257,9 +1247,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
                                 Vec3d vec3d4 = vec3d1.add(vec3d12.scale((double)f8));
                                 float f9 = this.width;
                                 float f10 = this.height;
-                                AxisAlignedBB axisalignedbb = (new AxisAlignedBB(vec3d, vec3d4.addVector(0.0D, (double)f10, 0.0D))).grow((double)f9, 0.0D, (double)f9);
-                                Vec3d lvt_19_1_ = vec3d.addVector(0.0D, 0.5099999904632568D, 0.0D);
-                                vec3d4 = vec3d4.addVector(0.0D, 0.5099999904632568D, 0.0D);
+                                AxisAlignedBB axisalignedbb = (new AxisAlignedBB(vec3d, vec3d4.add(0.0D, (double)f10, 0.0D))).grow((double)f9, 0.0D, (double)f9);
+                                Vec3d lvt_19_1_ = vec3d.add(0.0D, 0.5099999904632568D, 0.0D);
+                                vec3d4 = vec3d4.add(0.0D, 0.5099999904632568D, 0.0D);
                                 Vec3d vec3d5 = vec3d12.crossProduct(new Vec3d(0.0D, 1.0D, 0.0D));
                                 Vec3d vec3d6 = vec3d5.scale((double)(f9 * 0.5F));
                                 Vec3d vec3d7 = lvt_19_1_.subtract(vec3d6);
@@ -1337,18 +1327,5 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 }
             }
         }
-    }
-
-    public void updateSyncFields(EntityPlayerSP old)
-    {
-        this.lastReportedPosX = old.lastReportedPosX;
-        this.lastReportedPosY = old.lastReportedPosY;
-        this.lastReportedPosZ = old.lastReportedPosZ;
-        this.lastReportedYaw = old.lastReportedYaw;
-        this.lastReportedPitch = old.lastReportedPitch;
-        this.prevOnGround = old.prevOnGround;
-        this.serverSneakState = old.serverSneakState;
-        this.serverSprintState = old.serverSprintState;
-        this.positionUpdateTicks = old.positionUpdateTicks;
     }
 }

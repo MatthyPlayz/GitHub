@@ -2,6 +2,8 @@ package net.minecraft.item;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemCoal extends Item
 {
@@ -16,7 +18,7 @@ public class ItemCoal extends Item
      * Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have
      * different names based on their damage or NBT.
      */
-    public String getUnlocalizedName(ItemStack stack)
+    public String getTranslationKey(ItemStack stack)
     {
         return stack.getMetadata() == 1 ? "item.charcoal" : "item.coal";
     }

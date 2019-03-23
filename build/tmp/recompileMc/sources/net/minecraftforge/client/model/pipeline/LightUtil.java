@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,14 +30,18 @@ import net.minecraftforge.client.ForgeHooksClient;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public class LightUtil
 {
+    private static final float s2 = (float)Math.pow(2, .5);
+
     public static float diffuseLight(float x, float y, float z)
     {
-        return Math.min(x * x * 0.6f + y * y * ((3f + y) / 4f) + z * z * 0.8f, 1f);
+        float y1 = y + 3 - 2 * s2;
+        return (x * x * 0.6f + (y1 * y1 * (3 + 2 * s2)) / 8 + z * z * 0.8f);
     }
 
     public static float diffuseLight(EnumFacing side)
@@ -86,7 +90,16 @@ public class LightUtil
         }
     }
 
-    private static final ConcurrentMap<Pair<VertexFormat, VertexFormat>, int[]> formatMaps = new ConcurrentHashMap<>();
+    private static final LoadingCache<Pair<VertexFormat, VertexFormat>, int[]> formatMaps = CacheBuilder.newBuilder()
+        .maximumSize(10)
+        .build(new CacheLoader<Pair<VertexFormat, VertexFormat>, int[]>()
+        {
+            @Override
+            public int[] load(Pair<VertexFormat, VertexFormat> pair)
+            {
+                return mapFormats(pair.getLeft(), pair.getRight());
+            }
+        });
 
     public static void putBakedQuad(IVertexConsumer consumer, BakedQuad quad)
     {
@@ -97,19 +110,20 @@ public class LightUtil
             consumer.setQuadTint(quad.getTintIndex());
         }
         consumer.setApplyDiffuseLighting(quad.shouldApplyDiffuseLighting());
+        //int[] eMap = mapFormats(consumer.getVertexFormat(), DefaultVertexFormats.ITEM);
         float[] data = new float[4];
         VertexFormat formatFrom = consumer.getVertexFormat();
         VertexFormat formatTo = quad.getFormat();
         int countFrom = formatFrom.getElementCount();
         int countTo = formatTo.getElementCount();
-        int[] eMap = mapFormats(formatFrom, formatTo);
+        int[] eMap = formatMaps.getUnchecked(Pair.of(formatFrom, formatTo));
         for(int v = 0; v < 4; v++)
         {
             for(int e = 0; e < countFrom; e++)
             {
                 if(eMap[e] != countTo)
                 {
-                    unpack(quad.getVertexData(), data, formatTo, v, eMap[e]);
+                    unpack(quad.getVertexData(), data, quad.getFormat(), v, eMap[e]);
                     consumer.put(e, data);
                 }
                 else
@@ -121,11 +135,6 @@ public class LightUtil
     }
 
     public static int[] mapFormats(VertexFormat from, VertexFormat to)
-    {
-        return formatMaps.computeIfAbsent(Pair.of(from, to), pair -> generateMapping(pair.getLeft(), pair.getRight()));
-    }
-
-    private static int[] generateMapping(VertexFormat from, VertexFormat to)
     {
         int fromCount = from.getElementCount();
         int toCount = to.getElementCount();
@@ -152,7 +161,7 @@ public class LightUtil
     {
         int length = 4 < to.length ? 4 : to.length;
         VertexFormatElement element = formatFrom.getElement(e);
-        int vertexStart = v * formatFrom.getNextOffset() + formatFrom.getOffset(e);
+        int vertexStart = v * formatFrom.getSize() + formatFrom.getOffset(e);
         int count = element.getElementCount();
         VertexFormatElement.EnumType type = element.getType();
         int size = type.getSize();
@@ -185,15 +194,15 @@ public class LightUtil
                 }
                 else if(type == VertexFormatElement.EnumType.BYTE)
                 {
-                    to[i] = ((float)(byte)bits) / (mask >> 1);
+                    to[i] = ((float)(byte)bits) / mask * 2;
                 }
                 else if(type == VertexFormatElement.EnumType.SHORT)
                 {
-                    to[i] = ((float)(short)bits) / (mask >> 1);
+                    to[i] = ((float)(short)bits) / mask * 2;
                 }
                 else if(type == VertexFormatElement.EnumType.INT)
                 {
-                    to[i] = (float)((double)(bits & 0xFFFFFFFFL) / (0xFFFFFFFFL >> 1));
+                    to[i] = ((float)(bits & 0xFFFFFFFFL)) / 0xFFFFFFFFL * 2;
                 }
             }
             else
@@ -206,7 +215,7 @@ public class LightUtil
     public static void pack(float[] from, int[] to, VertexFormat formatTo, int v, int e)
     {
         VertexFormatElement element = formatTo.getElement(e);
-        int vertexStart = v * formatTo.getNextOffset() + formatTo.getOffset(e);
+        int vertexStart = v * formatTo.getSize() + formatTo.getOffset(e);
         int count = element.getElementCount();
         VertexFormatElement.EnumType type = element.getType();
         int size = type.getSize();
@@ -230,11 +239,11 @@ public class LightUtil
                     type == VertexFormatElement.EnumType.UINT
                 )
                 {
-                    bits = Math.round(f * mask);
+                    bits = (int)(f * mask);
                 }
                 else
                 {
-                    bits = Math.round(f * (mask >> 1));
+                    bits = (int)(f * mask / 2);
                 }
                 to[index] &= ~(mask << (offset * 8));
                 to[index] |= (((bits & mask) << (offset * 8)));
@@ -288,15 +297,8 @@ public class LightUtil
 
     public static void renderQuadColor(BufferBuilder wr, BakedQuad quad, int auxColor)
     {
-        if (quad.getFormat().equals(wr.getVertexFormat())) 
-        {
-            wr.addVertexData(quad.getVertexData());
-            ForgeHooksClient.putQuadColor(wr, quad, auxColor);
-        }
-        else
-        {
-            renderQuadColorSlow(wr, quad, auxColor);
-        }
+        wr.addVertexData(quad.getVertexData());
+        ForgeHooksClient.putQuadColor(wr, quad, auxColor);
     }
 
     public static class ItemConsumer extends VertexTransformer

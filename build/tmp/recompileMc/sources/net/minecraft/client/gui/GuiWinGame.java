@@ -27,24 +27,18 @@ public class GuiWinGame extends GuiScreen
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ResourceLocation MINECRAFT_LOGO = new ResourceLocation("textures/gui/title/minecraft.png");
-    private static final ResourceLocation field_194401_g = new ResourceLocation("textures/gui/title/edition.png");
     private static final ResourceLocation VIGNETTE_TEXTURE = new ResourceLocation("textures/misc/vignette.png");
     private final boolean poem;
     private final Runnable onFinished;
     private float time;
     private List<String> lines;
     private int totalScrollLength;
-    private float scrollSpeed = 0.5F;
+    private final float scrollSpeed = 0.5F;
 
     public GuiWinGame(boolean poemIn, Runnable onFinishedIn)
     {
         this.poem = poemIn;
         this.onFinished = onFinishedIn;
-
-        if (!poemIn)
-        {
-            this.scrollSpeed = 0.75F;
-        }
     }
 
     /**
@@ -54,7 +48,7 @@ public class GuiWinGame extends GuiScreen
     {
         this.mc.getMusicTicker().update();
         this.mc.getSoundHandler().update();
-        float f = (float)(this.totalScrollLength + this.height + this.height + 24) / this.scrollSpeed;
+        float f = (float)(this.totalScrollLength + this.height + this.height + 24) / 0.5F;
 
         if (this.time > f)
         {
@@ -169,11 +163,11 @@ public class GuiWinGame extends GuiScreen
         this.mc.getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
         int i = this.width;
-        float f = -this.time * 0.5F * this.scrollSpeed;
-        float f1 = (float)this.height - this.time * 0.5F * this.scrollSpeed;
+        float f = -this.time * 0.5F * 0.5F;
+        float f1 = (float)this.height - this.time * 0.5F * 0.5F;
         float f2 = 0.015625F;
         float f3 = this.time * 0.02F;
-        float f4 = (float)(this.totalScrollLength + this.height + this.height + 24) / this.scrollSpeed;
+        float f4 = (float)(this.totalScrollLength + this.height + this.height + 24) / 0.5F;
         float f5 = (f4 - 20.0F - this.time) * 0.005F;
 
         if (f5 < f3)
@@ -207,7 +201,7 @@ public class GuiWinGame extends GuiScreen
         int j = this.width / 2 - 137;
         int k = this.height + 50;
         this.time += partialTicks;
-        float f = -this.time * this.scrollSpeed;
+        float f = -this.time * 0.5F;
         GlStateManager.pushMatrix();
         GlStateManager.translate(0.0F, f, 0.0F);
         this.mc.getTextureManager().bindTexture(MINECRAFT_LOGO);
@@ -215,8 +209,6 @@ public class GuiWinGame extends GuiScreen
         GlStateManager.enableAlpha();
         this.drawTexturedModalRect(j, k, 0, 0, 155, 44);
         this.drawTexturedModalRect(j + 155, k, 0, 45, 155, 44);
-        this.mc.getTextureManager().bindTexture(field_194401_g);
-        drawModalRectWithCustomSizedTexture(j + 88, k + 37, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
         GlStateManager.disableAlpha();
         int l = k + 100;
 

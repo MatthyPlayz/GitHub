@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
-import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.common.crafting.JsonContext;
 
@@ -50,11 +49,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IShapedRecipe
+public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
 {
-    @Deprecated
+    //Added in for future ease of change, but hard coded for now.
     public static final int MAX_CRAFT_GRID_WIDTH = 3;
-    @Deprecated
     public static final int MAX_CRAFT_GRID_HEIGHT = 3;
 
     @Nonnull
@@ -85,6 +83,10 @@ public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implement
     @Nonnull
     public ItemStack getCraftingResult(@Nonnull InventoryCrafting var1){ return output.copy(); }
 
+    /**
+     * Get the result of this recipe, usually for display purposes (e.g. recipe book). If your recipe has more than one
+     * possible result (e.g. it's dynamic and depends on its inputs), then return an empty stack.
+     */
     @Override
     @Nonnull
     public ItemStack getRecipeOutput(){ return output; }
@@ -95,9 +97,9 @@ public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implement
     @Override
     public boolean matches(@Nonnull InventoryCrafting inv, @Nonnull World world)
     {
-        for (int x = 0; x <= inv.getWidth() - width; x++)
+        for (int x = 0; x <= MAX_CRAFT_GRID_WIDTH - width; x++)
         {
-            for (int y = 0; y <= inv.getHeight() - height; ++y)
+            for (int y = 0; y <= MAX_CRAFT_GRID_HEIGHT - height; ++y)
             {
                 if (checkMatch(inv, x, y, false))
                 {
@@ -119,9 +121,9 @@ public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implement
      */
     protected boolean checkMatch(InventoryCrafting inv, int startX, int startY, boolean mirror)
     {
-        for (int x = 0; x < inv.getWidth(); x++)
+        for (int x = 0; x < MAX_CRAFT_GRID_WIDTH; x++)
         {
-            for (int y = 0; y < inv.getHeight(); y++)
+            for (int y = 0; y < MAX_CRAFT_GRID_HEIGHT; y++)
             {
                 int subX = x - startX;
                 int subY = y - startY;
@@ -162,30 +164,19 @@ public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implement
         return this.input;
     }
 
-    @Deprecated //Use IShapedRecipe.getRecipeWidth
     public int getWidth()
     {
         return width;
     }
 
-    @Override
-    public int getRecipeWidth()
-    {
-        return this.getWidth();
-    }
-
-    @Deprecated //Use IShapedRecipe.getRecipeHeight
     public int getHeight()
     {
         return height;
     }
 
-    @Override
-    public int getRecipeHeight()
-    {
-        return this.getHeight();
-    }
-
+    /**
+     * Recipes with equal group are combined into one button in the recipe book
+     */
     @Override
     @Nonnull
     public String getGroup()

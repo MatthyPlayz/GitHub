@@ -83,7 +83,7 @@ public class EntityLlamaSpit extends Entity implements IProjectile
             raytraceresult = new RayTraceResult(entity);
         }
 
-        if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
+        if (raytraceresult != null)
         {
             this.onHit(raytraceresult);
         }

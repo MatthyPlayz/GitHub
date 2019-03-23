@@ -23,6 +23,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecraftforge.common.IShearable
 {
@@ -36,9 +38,13 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, BlockDoublePlant.EnumPlantType.SUNFLOWER).withProperty(HALF, BlockDoublePlant.EnumBlockHalf.LOWER).withProperty(FACING, EnumFacing.NORTH));
         this.setHardness(0.0F);
         this.setSoundType(SoundType.PLANT);
-        this.setUnlocalizedName("doublePlant");
+        this.setTranslationKey("doublePlant");
     }
 
+    /**
+     * @deprecated call via {@link IBlockState#getBoundingBox(IBlockAccess,BlockPos)} whenever possible.
+     * Implementing/overriding is fine.
+     */
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
         return FULL_BLOCK_AABB;
@@ -374,7 +380,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         private static final BlockDoublePlant.EnumPlantType[] META_LOOKUP = new BlockDoublePlant.EnumPlantType[values().length];
         private final int meta;
         private final String name;
-        private final String unlocalizedName;
+        private final String translationKey;
 
         private EnumPlantType(int meta, String name)
         {
@@ -385,7 +391,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         {
             this.meta = meta;
             this.name = name;
-            this.unlocalizedName = unlocalizedName;
+            this.translationKey = unlocalizedName;
         }
 
         public int getMeta()
@@ -413,9 +419,9 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
             return this.name;
         }
 
-        public String getUnlocalizedName()
+        public String getTranslationKey()
         {
-            return this.unlocalizedName;
+            return this.translationKey;
         }
 
         static

@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -53,14 +52,6 @@ public class Profiler
         }
     }
 
-    public void func_194340_a(Supplier<String> p_194340_1_)
-    {
-        if (this.profilingEnabled)
-        {
-            this.startSection(p_194340_1_.get());
-        }
-    }
-
     /**
      * End section
      */
@@ -92,7 +83,9 @@ public class Profiler
     }
 
     /**
-     * Get profiling data
+     * Gets the current profiling data. WARNING: If profiling is enabled, this must not return an empty list, as
+     * otherwise the game will crash when attempting to render the profiler. I.E. don't stub out the profiler code, OK?
+     * It's not necessary.
      */
     public List<Profiler.Result> getProfilingData(String profilerName)
     {
@@ -173,13 +166,6 @@ public class Profiler
     public String getNameOfLastSection()
     {
         return this.sectionList.isEmpty() ? "[UNKNOWN]" : (String)this.sectionList.get(this.sectionList.size() - 1);
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void func_194339_b(Supplier<String> p_194339_1_)
-    {
-        this.endSection();
-        this.func_194340_a(p_194339_1_);
     }
 
     public static final class Result implements Comparable<Profiler.Result>

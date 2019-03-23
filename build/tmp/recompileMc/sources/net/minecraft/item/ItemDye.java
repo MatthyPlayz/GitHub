@@ -36,10 +36,10 @@ public class ItemDye extends Item
      * Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have
      * different names based on their damage or NBT.
      */
-    public String getUnlocalizedName(ItemStack stack)
+    public String getTranslationKey(ItemStack stack)
     {
         int i = stack.getMetadata();
-        return super.getUnlocalizedName() + "." + EnumDyeColor.byDyeDamage(i).getUnlocalizedName();
+        return super.getTranslationKey() + "." + EnumDyeColor.byDyeDamage(i).getTranslationKey();
     }
 
     /**
@@ -200,6 +200,7 @@ public class ItemDye extends Item
     /**
      * returns a list of items with the same ID, but different meta (eg: dye returns 16 items)
      */
+    @SideOnly(Side.CLIENT)
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
     {
         if (this.isInCreativeTab(tab))

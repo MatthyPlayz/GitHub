@@ -557,6 +557,20 @@ public abstract class Container
         this.getSlot(slotID).putStack(stack);
     }
 
+    public void addItem(int slotIn, ItemStack stack)
+    {
+        ItemStack itemstack = this.getSlot(slotIn).getStack();
+
+        if (itemstack.isEmpty())
+        {
+            this.putStackInSlot(slotIn, stack);
+        }
+        else if (itemstack.getTranslationKey().equals(stack.getTranslationKey()) && itemstack.getCount() < itemstack.getMaxStackSize())
+        {
+            itemstack.grow(stack.getCount());
+        }
+    }
+
     @SideOnly(Side.CLIENT)
     public void setAll(List<ItemStack> p_190896_1_)
     {

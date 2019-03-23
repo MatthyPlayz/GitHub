@@ -24,7 +24,6 @@ public class BlockFarmland extends Block
 {
     public static final PropertyInteger MOISTURE = PropertyInteger.create("moisture", 0, 7);
     protected static final AxisAlignedBB FARMLAND_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.9375D, 1.0D);
-    protected static final AxisAlignedBB field_194405_c = new AxisAlignedBB(0.0D, 0.9375D, 0.0D, 1.0D, 1.0D, 1.0D);
 
     protected BlockFarmland()
     {
@@ -34,6 +33,10 @@ public class BlockFarmland extends Block
         this.setLightOpacity(255);
     }
 
+    /**
+     * @deprecated call via {@link IBlockState#getBoundingBox(IBlockAccess,BlockPos)} whenever possible.
+     * Implementing/overriding is fine.
+     */
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
         return FARMLAND_AABB;
@@ -41,12 +44,16 @@ public class BlockFarmland extends Block
 
     /**
      * Used to determine ambient occlusion and culling when rebuilding chunks for render
+     * @deprecated call via {@link IBlockState#isOpaqueCube()} whenever possible. Implementing/overriding is fine.
      */
     public boolean isOpaqueCube(IBlockState state)
     {
         return false;
     }
 
+    /**
+     * @deprecated call via {@link IBlockState#isFullCube()} whenever possible. Implementing/overriding is fine.
+     */
     public boolean isFullCube(IBlockState state)
     {
         return false;
@@ -64,7 +71,7 @@ public class BlockFarmland extends Block
             }
             else if (!this.hasCrops(worldIn, pos))
             {
-                turnToDirt(worldIn, pos);
+                this.turnToDirt(worldIn, pos);
             }
         }
         else if (i < 7)
@@ -78,23 +85,23 @@ public class BlockFarmland extends Block
      */
     public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance)
     {
-        if (net.minecraftforge.common.ForgeHooks.onFarmlandTrample(worldIn, pos, Blocks.DIRT.getDefaultState(), fallDistance, entityIn)) // Forge: Move logic to Entity#canTrample
+        if (!worldIn.isRemote && entityIn.canTrample(worldIn, this, pos, fallDistance)) // Forge: Move logic to Entity#canTrample
         {
-            turnToDirt(worldIn, pos);
+            this.turnToDirt(worldIn, pos);
         }
 
         super.onFallenUpon(worldIn, pos, entityIn, fallDistance);
     }
 
-    protected static void turnToDirt(World p_190970_0_, BlockPos worldIn)
+    private void turnToDirt(World worldIn, BlockPos pos)
     {
-        p_190970_0_.setBlockState(worldIn, Blocks.DIRT.getDefaultState());
-        AxisAlignedBB axisalignedbb = field_194405_c.offset(worldIn);
+        IBlockState iblockstate = Blocks.DIRT.getDefaultState();
+        worldIn.setBlockState(pos, iblockstate);
+        AxisAlignedBB axisalignedbb = iblockstate.getCollisionBoundingBox(worldIn, pos).offset(pos);
 
-        for (Entity entity : p_190970_0_.getEntitiesWithinAABBExcludingEntity((Entity)null, axisalignedbb))
+        for (Entity entity : worldIn.getEntitiesWithinAABBExcludingEntity((Entity)null, axisalignedbb))
         {
-            double d0 = Math.min(axisalignedbb.maxY - axisalignedbb.minY, axisalignedbb.maxY - entity.getEntityBoundingBox().minY);
-            entity.setPositionAndUpdate(entity.posX, entity.posY + d0 + 0.001D, entity.posZ);
+            entity.setPosition(entity.posX, axisalignedbb.maxY, entity.posZ);
         }
     }
 
@@ -114,7 +121,7 @@ public class BlockFarmland extends Block
             }
         }
 
-        return net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket(worldIn, pos);
+        return false;
     }
 
     /**
@@ -128,7 +135,7 @@ public class BlockFarmland extends Block
 
         if (worldIn.getBlockState(pos.up()).getMaterial().isSolid())
         {
-            turnToDirt(worldIn, pos);
+            this.turnToDirt(worldIn, pos);
         }
     }
 
@@ -141,10 +148,14 @@ public class BlockFarmland extends Block
 
         if (worldIn.getBlockState(pos.up()).getMaterial().isSolid())
         {
-            turnToDirt(worldIn, pos);
+            this.turnToDirt(worldIn, pos);
         }
     }
 
+    /**
+     * @deprecated call via {@link IBlockState#shouldSideBeRendered(IBlockAccess,BlockPos,EnumFacing)} whenever
+     * possible. Implementing/overriding is fine.
+     */
     @SideOnly(Side.CLIENT)
     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
     {
@@ -201,6 +212,8 @@ public class BlockFarmland extends Block
      * does not fit the other descriptions and will generally cause other things not to connect to the face.
      * 
      * @return an approximation of the form of the given face
+     * @deprecated call via {@link IBlockState#getBlockFaceShape(IBlockAccess,BlockPos,EnumFacing)} whenever possible.
+     * Implementing/overriding is fine.
      */
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {

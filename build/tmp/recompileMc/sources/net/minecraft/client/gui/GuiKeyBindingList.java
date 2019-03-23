@@ -138,7 +138,7 @@ public class GuiKeyBindingList extends GuiListExtended
             GuiKeyBindingList.this.mc.fontRenderer.drawString(this.keyDesc, x + 90 - GuiKeyBindingList.this.maxListLabelWidth, y + slotHeight / 2 - GuiKeyBindingList.this.mc.fontRenderer.FONT_HEIGHT / 2, 16777215);
             this.btnReset.x = x + 210;
             this.btnReset.y = y;
-            this.btnReset.enabled = !this.keybinding.isSetToDefaultValue();
+            this.btnReset.enabled = this.keybinding.isSetToDefaultValue();
             this.btnReset.drawButton(GuiKeyBindingList.this.mc, mouseX, mouseY, partialTicks);
             this.btnChangeKeyBinding.x = x + 105;
             this.btnChangeKeyBinding.y = y;

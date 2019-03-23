@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -98,13 +98,10 @@ public class SidedInvWrapper implements IItemHandlerModifiable
         int m;
         if (!stackInSlot.isEmpty())
         {
-            if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
-                return stack;
-
             if (!ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))
                 return stack;
 
-            if (!inv.canInsertItem(slot1, stack, side) || !inv.isItemValidForSlot(slot1, stack))
+            if (!inv.isItemValidForSlot(slot1, stack) || !inv.canInsertItem(slot1, stack, side))
                 return stack;
 
             m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot)) - stackInSlot.getCount();
@@ -140,7 +137,7 @@ public class SidedInvWrapper implements IItemHandlerModifiable
         }
         else
         {
-            if (!inv.canInsertItem(slot1, stack, side) || !inv.isItemValidForSlot(slot1, stack))
+            if (!inv.isItemValidForSlot(slot1, stack) || !inv.canInsertItem(slot1, stack, side))
                 return stack;
 
             m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot));
@@ -229,11 +226,5 @@ public class SidedInvWrapper implements IItemHandlerModifiable
     public int getSlotLimit(int slot)
     {
         return inv.getInventoryStackLimit();
-    }
-
-    @Override
-    public boolean isItemValid(int slot, @Nonnull ItemStack stack)
-    {
-        return inv.isItemValidForSlot(slot, stack);
     }
 }

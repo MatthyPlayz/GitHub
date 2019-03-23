@@ -21,6 +21,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraftforge.common.IShearable
 {
@@ -33,6 +35,10 @@ public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraf
         this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, BlockTallGrass.EnumType.DEAD_BUSH));
     }
 
+    /**
+     * @deprecated call via {@link IBlockState#getBoundingBox(IBlockAccess,BlockPos)} whenever possible.
+     * Implementing/overriding is fine.
+     */
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
         return TALL_GRASS_AABB;

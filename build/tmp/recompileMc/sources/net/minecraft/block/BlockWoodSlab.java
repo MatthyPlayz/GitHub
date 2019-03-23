@@ -15,6 +15,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class BlockWoodSlab extends BlockSlab
 {
@@ -36,6 +38,8 @@ public abstract class BlockWoodSlab extends BlockSlab
 
     /**
      * Get the MapColor for this Block and the given BlockState
+     * @deprecated call via {@link IBlockState#getMapColor(IBlockAccess,BlockPos)} whenever possible.
+     * Implementing/overriding is fine.
      */
     public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
@@ -58,9 +62,9 @@ public abstract class BlockWoodSlab extends BlockSlab
     /**
      * Returns the slab block name with the type associated with it
      */
-    public String getUnlocalizedName(int meta)
+    public String getTranslationKey(int meta)
     {
-        return super.getUnlocalizedName() + "." + BlockPlanks.EnumType.byMetadata(meta).getUnlocalizedName();
+        return super.getTranslationKey() + "." + BlockPlanks.EnumType.byMetadata(meta).getTranslationKey();
     }
 
     public IProperty<?> getVariantProperty()

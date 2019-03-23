@@ -324,7 +324,7 @@ public class GameSettings
                 this.mc.getTextureMapBlocks().setMipmapLevels(this.mipmapLevels);
                 this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                 this.mc.getTextureMapBlocks().setBlurMipmapDirect(false, this.mipmapLevels > 0);
-                this.needsBlockModelRefresh = true; // FORGE: fix for MC-64581 very laggy mipmap slider
+                this.needsResourceRefresh = true; // FORGE: fix for MC-64581 very laggy mipmap slider
             }
         }
 
@@ -389,7 +389,7 @@ public class GameSettings
         if (settingsOption == GameSettings.Options.ANAGLYPH)
         {
             this.anaglyph = !this.anaglyph;
-            net.minecraftforge.fml.client.FMLClientHandler.instance().refreshResources(net.minecraftforge.client.resource.VanillaResourceType.TEXTURES);
+            this.mc.refreshResources();
         }
 
         if (settingsOption == GameSettings.Options.GRAPHICS)
@@ -856,7 +856,7 @@ public class GameSettings
 
                     if ("difficulty".equals(s1))
                     {
-                        this.difficulty = EnumDifficulty.getDifficultyEnum(Integer.parseInt(s2));
+                        this.difficulty = EnumDifficulty.byId(Integer.parseInt(s2));
                     }
 
                     if ("fancyGraphics".equals(s1))
@@ -1187,7 +1187,7 @@ public class GameSettings
         try
         {
             printwriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.optionsFile), StandardCharsets.UTF_8));
-            printwriter.println("version:1343");
+            printwriter.println("version:1139");
             printwriter.println("invertYMouse:" + this.invertMouse);
             printwriter.println("mouseSensitivity:" + this.mouseSensitivity);
             printwriter.println("fov:" + (this.fovSetting - 70.0F) / 40.0F);
@@ -1200,7 +1200,7 @@ public class GameSettings
             printwriter.println("anaglyph3d:" + this.anaglyph);
             printwriter.println("maxFps:" + this.limitFramerate);
             printwriter.println("fboEnable:" + this.fboEnable);
-            printwriter.println("difficulty:" + this.difficulty.getDifficultyId());
+            printwriter.println("difficulty:" + this.difficulty.getId());
             printwriter.println("fancyGraphics:" + this.fancyGraphics);
             printwriter.println("ao:" + this.ambientOcclusion);
 
@@ -1524,13 +1524,13 @@ public class GameSettings
     }
 
     // FORGE: fix for MC-64581 very laggy mipmap slider
-    private boolean needsBlockModelRefresh = false;
+    private boolean needsResourceRefresh = false;
     public void onGuiClosed()
     {
-        if (needsBlockModelRefresh)
+        if (needsResourceRefresh)
         {
-            net.minecraftforge.fml.client.FMLClientHandler.instance().scheduleResourcesRefresh(net.minecraftforge.client.resource.VanillaResourceType.MODELS);
-            this.needsBlockModelRefresh = false;
+            this.mc.scheduleResourcesRefresh();
+            this.needsResourceRefresh = false;
         }
     }
     /******* Forge End ***********/

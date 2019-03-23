@@ -1,11 +1,11 @@
 package com.matthyfamily.items;
 
-import net.minecraft.item.Item;
+import net.minecraft.item.*;
 
 public class ItemBasic extends Item {
 	
 	public ItemBasic(String name) {
-		setUnlocalizedName(name);
+		setTranslationKey(name);
 		setRegistryName(name);
 	}	
 }

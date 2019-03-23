@@ -381,6 +381,9 @@ public class ChunkGeneratorHell implements IChunkGenerator
 
     /**
      * Generate initial structures in this chunk, e.g. mineshafts, temples, lakes, and dungeons
+     *  
+     * @param x Chunk x coordinate
+     * @param z Chunk z coordinate
      */
     public void populate(int x, int z)
     {
@@ -419,9 +422,9 @@ public class ChunkGeneratorHell implements IChunkGenerator
         }//Forge: End doGLowstone
 
         net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(false, this, this.world, this.rand, x, z, false);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.terraingen.DecorateBiomeEvent.Pre(this.world, this.rand, chunkpos));
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.terraingen.DecorateBiomeEvent.Pre(this.world, this.rand, blockpos));
 
-        if (net.minecraftforge.event.terraingen.TerrainGen.decorate(this.world, this.rand, chunkpos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SHROOM))
+        if (net.minecraftforge.event.terraingen.TerrainGen.decorate(this.world, this.rand, blockpos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SHROOM))
         {
         if (this.rand.nextBoolean())
         {
@@ -452,8 +455,7 @@ public class ChunkGeneratorHell implements IChunkGenerator
         if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.world, this.rand, x, z, false, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.NETHER_LAVA2))
         for (int j2 = 0; j2 < 16; ++j2)
         {
-            int offset = net.minecraftforge.common.ForgeModContainer.fixVanillaCascading ? 8 : 0; // MC-117810
-            this.lavaTrapGen.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + offset, this.rand.nextInt(108) + 10, this.rand.nextInt(16) + offset));
+            this.lavaTrapGen.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16), this.rand.nextInt(108) + 10, this.rand.nextInt(16)));
         }
 
         biome.decorate(this.world, this.rand, new BlockPos(i, 0, j));

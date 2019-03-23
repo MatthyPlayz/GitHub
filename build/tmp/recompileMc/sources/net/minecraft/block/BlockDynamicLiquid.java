@@ -21,16 +21,15 @@ public class BlockDynamicLiquid extends BlockLiquid
 
     private void placeStaticBlock(World worldIn, BlockPos pos, IBlockState currentState)
     {
-        worldIn.setBlockState(pos, getStaticBlock(this.blockMaterial).getDefaultState().withProperty(LEVEL, currentState.getValue(LEVEL)), 2);
+        worldIn.setBlockState(pos, getStaticBlock(this.material).getDefaultState().withProperty(LEVEL, currentState.getValue(LEVEL)), 2);
     }
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if (!worldIn.isAreaLoaded(pos, this.getSlopeFindDistance(worldIn))) return; // Forge: avoid loading unloaded chunks
         int i = ((Integer)state.getValue(LEVEL)).intValue();
         int j = 1;
 
-        if (this.blockMaterial == Material.LAVA && !worldIn.provider.doesWaterVaporize())
+        if (this.material == Material.LAVA && !worldIn.provider.doesWaterVaporize())
         {
             j = 2;
         }
@@ -68,7 +67,7 @@ public class BlockDynamicLiquid extends BlockLiquid
                 }
             }
 
-            if (this.adjacentSourceBlocks >= 2 && net.minecraftforge.event.ForgeEventFactory.canCreateFluidSource(worldIn, pos, state, this.blockMaterial == Material.WATER))
+            if (this.adjacentSourceBlocks >= 2 && net.minecraftforge.event.ForgeEventFactory.canCreateFluidSource(worldIn, pos, state, this.material == Material.WATER))
             {
                 IBlockState iblockstate = worldIn.getBlockState(pos.down());
 
@@ -76,13 +75,13 @@ public class BlockDynamicLiquid extends BlockLiquid
                 {
                     i1 = 0;
                 }
-                else if (iblockstate.getMaterial() == this.blockMaterial && ((Integer)iblockstate.getValue(LEVEL)).intValue() == 0)
+                else if (iblockstate.getMaterial() == this.material && ((Integer)iblockstate.getValue(LEVEL)).intValue() == 0)
                 {
                     i1 = 0;
                 }
             }
 
-            if (this.blockMaterial == Material.LAVA && i < 8 && i1 < 8 && i1 > i && rand.nextInt(4) != 0)
+            if (this.material == Material.LAVA && i < 8 && i1 < 8 && i1 > i && rand.nextInt(4) != 0)
             {
                 k *= 4;
             }
@@ -117,9 +116,9 @@ public class BlockDynamicLiquid extends BlockLiquid
 
         if (this.canFlowInto(worldIn, pos.down(), iblockstate1))
         {
-            if (this.blockMaterial == Material.LAVA && worldIn.getBlockState(pos.down()).getMaterial() == Material.WATER)
+            if (this.material == Material.LAVA && worldIn.getBlockState(pos.down()).getMaterial() == Material.WATER)
             {
-                worldIn.setBlockState(pos.down(), net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, pos.down(), pos, Blocks.STONE.getDefaultState()));
+                worldIn.setBlockState(pos.down(), Blocks.STONE.getDefaultState());
                 this.triggerMixEffects(worldIn, pos.down());
                 return;
             }
@@ -161,7 +160,7 @@ public class BlockDynamicLiquid extends BlockLiquid
         {
             if (state.getMaterial() != Material.AIR)
             {
-                if (this.blockMaterial == Material.LAVA)
+                if (this.material == Material.LAVA)
                 {
                     this.triggerMixEffects(worldIn, pos);
                 }
@@ -187,9 +186,9 @@ public class BlockDynamicLiquid extends BlockLiquid
                 BlockPos blockpos = pos.offset(enumfacing);
                 IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
-                if (!this.isBlocked(worldIn, blockpos, iblockstate) && (iblockstate.getMaterial() != this.blockMaterial || ((Integer)iblockstate.getValue(LEVEL)).intValue() > 0))
+                if (!this.isBlocked(worldIn, blockpos, iblockstate) && (iblockstate.getMaterial() != this.material || ((Integer)iblockstate.getValue(LEVEL)).intValue() > 0))
                 {
-                    if (!this.isBlocked(worldIn, blockpos.down(), worldIn.getBlockState(blockpos.down())))
+                    if (!this.isBlocked(worldIn, blockpos.down(), iblockstate))
                     {
                         return distance;
                     }
@@ -212,7 +211,7 @@ public class BlockDynamicLiquid extends BlockLiquid
 
     private int getSlopeFindDistance(World worldIn)
     {
-        return this.blockMaterial == Material.LAVA && !worldIn.provider.doesWaterVaporize() ? 2 : 4;
+        return this.material == Material.LAVA && !worldIn.provider.doesWaterVaporize() ? 2 : 4;
     }
 
     /**
@@ -228,7 +227,7 @@ public class BlockDynamicLiquid extends BlockLiquid
             BlockPos blockpos = pos.offset(enumfacing);
             IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
-            if (!this.isBlocked(worldIn, blockpos, iblockstate) && (iblockstate.getMaterial() != this.blockMaterial || ((Integer)iblockstate.getValue(LEVEL)).intValue() > 0))
+            if (!this.isBlocked(worldIn, blockpos, iblockstate) && (iblockstate.getMaterial() != this.material || ((Integer)iblockstate.getValue(LEVEL)).intValue() > 0))
             {
                 int j;
 
@@ -259,12 +258,11 @@ public class BlockDynamicLiquid extends BlockLiquid
 
     private boolean isBlocked(World worldIn, BlockPos pos, IBlockState state)
     {
-        Block block = state.getBlock(); //Forge: state must be valid for position
-        Material mat = state.getMaterial();
+        Block block = worldIn.getBlockState(pos).getBlock();
 
         if (!(block instanceof BlockDoor) && block != Blocks.STANDING_SIGN && block != Blocks.LADDER && block != Blocks.REEDS)
         {
-            return mat != Material.PORTAL && mat != Material.STRUCTURE_VOID ? mat.blocksMovement() : true;
+            return block.material != Material.PORTAL && block.material != Material.STRUCTURE_VOID ? block.material.blocksMovement() : true;
         }
         else
         {
@@ -299,7 +297,7 @@ public class BlockDynamicLiquid extends BlockLiquid
     private boolean canFlowInto(World worldIn, BlockPos pos, IBlockState state)
     {
         Material material = state.getMaterial();
-        return material != this.blockMaterial && material != Material.LAVA && !this.isBlocked(worldIn, pos, state);
+        return material != this.material && material != Material.LAVA && !this.isBlocked(worldIn, pos, state);
     }
 
     /**

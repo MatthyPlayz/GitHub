@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 import net.minecraft.client.util.RecipeItemHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class Ingredient implements Predicate<ItemStack>
 {
@@ -21,9 +23,7 @@ public class Ingredient implements Predicate<ItemStack>
         }
     };
     private final ItemStack[] matchingStacks;
-    private final ItemStack[] matchingStacksExploded;
     private IntList matchingStacksPacked;
-    private final boolean isSimple;
 
     protected Ingredient(int size)
     {
@@ -32,28 +32,13 @@ public class Ingredient implements Predicate<ItemStack>
 
     protected Ingredient(ItemStack... p_i47503_1_)
     {
-        boolean simple = true;
         this.matchingStacks = p_i47503_1_;
-        net.minecraft.util.NonNullList<ItemStack> lst = net.minecraft.util.NonNullList.create();
-        for (ItemStack s : p_i47503_1_)
-        {
-            if (s.isEmpty())
-                continue;
-            if (s.getItem().isDamageable())
-                simple = false;
-            if (s.getMetadata() == net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE)
-                s.getItem().getSubItems(net.minecraft.creativetab.CreativeTabs.SEARCH, lst);
-            else
-                lst.add(s);
-        }
-        this.matchingStacksExploded = lst.toArray(new ItemStack[lst.size()]);
-        this.isSimple = simple && this.matchingStacksExploded.length > 0;
         Ingredient.INSTANCES.add(this);
     }
 
     public ItemStack[] getMatchingStacks()
     {
-        return this.matchingStacksExploded;
+        return this.matchingStacks;
     }
 
     public boolean apply(@Nullable ItemStack p_apply_1_)
@@ -79,35 +64,6 @@ public class Ingredient implements Predicate<ItemStack>
 
             return false;
         }
-    }
-
-    public IntList getValidItemStacksPacked()
-    {
-        if (this.matchingStacksPacked == null)
-        {
-            this.matchingStacksPacked = new IntArrayList(this.matchingStacksExploded.length);
-
-            for (ItemStack itemstack : this.matchingStacksExploded)
-            {
-                this.matchingStacksPacked.add(RecipeItemHelper.pack(itemstack));
-            }
-
-            this.matchingStacksPacked.sort(IntComparators.NATURAL_COMPARATOR);
-        }
-
-        return this.matchingStacksPacked;
-    }
-
-    public static void invalidateAll()
-    {
-        for (Ingredient ing : INSTANCES)
-            if (ing != null)
-                ing.invalidate();
-    }
-
-    protected void invalidate()
-    {
-        this.matchingStacksPacked = null;
     }
 
     public static Ingredient fromItem(Item p_193367_0_)
@@ -143,21 +99,33 @@ public class Ingredient implements Predicate<ItemStack>
         return EMPTY;
     }
 
-    // Merges several vanilla Ingredients together. As a qwerk of how the json is structured, we can't tell if its a single Ingredient type or multiple so we split per item and remerge here.
-    //Only public for internal use, so we can access a private field in here.
-    public static Ingredient merge(java.util.Collection<Ingredient> parts)
+    @SideOnly(Side.CLIENT)
+    public IntList getValidItemStacksPacked()
     {
-        net.minecraft.util.NonNullList<ItemStack> lst = net.minecraft.util.NonNullList.create();
-        for (Ingredient part : parts)
+        if (this.matchingStacksPacked == null)
         {
-            for (ItemStack stack : part.matchingStacks)
-                lst.add(stack);
+            this.matchingStacksPacked = new IntArrayList(this.matchingStacks.length);
+
+            for (ItemStack itemstack : this.matchingStacks)
+            {
+                this.matchingStacksPacked.add(RecipeItemHelper.pack(itemstack));
+            }
+
+            this.matchingStacksPacked.sort(IntComparators.NATURAL_COMPARATOR);
         }
-        return new Ingredient(lst.toArray(new ItemStack[lst.size()]));
+
+        return this.matchingStacksPacked;
     }
 
-    public boolean isSimple()
+    public static void invalidateAll()
     {
-        return isSimple || this == EMPTY;
+        for (Ingredient ing : INSTANCES)
+            if (ing != null)
+                ing.invalidate();
+    }
+
+    protected void invalidate()
+    {
+        this.matchingStacksPacked = null;
     }
 }

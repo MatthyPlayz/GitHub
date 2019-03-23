@@ -66,7 +66,7 @@ public class ItemRenderer
             Item item = heldStack.getItem();
             Block block = Block.getBlockFromItem(item);
             GlStateManager.pushMatrix();
-            boolean flag = this.itemRenderer.shouldRenderItemIn3D(heldStack) && block.getBlockLayer() == BlockRenderLayer.TRANSLUCENT;
+            boolean flag = this.itemRenderer.shouldRenderItemIn3D(heldStack) && block.getRenderLayer() == BlockRenderLayer.TRANSLUCENT;
 
             if (flag)
             {
@@ -223,7 +223,7 @@ public class ItemRenderer
         bufferbuilder.pos(135.0D, -7.0D, 0.0D).tex(1.0D, 0.0D).endVertex();
         bufferbuilder.pos(-7.0D, -7.0D, 0.0D).tex(0.0D, 0.0D).endVertex();
         tessellator.draw();
-        MapData mapdata = ((net.minecraft.item.ItemMap) stack.getItem()).getMapData(stack, this.mc.world);
+        MapData mapdata = Items.FILLED_MAP.getMapData(stack, this.mc.world);
 
         if (mapdata != null)
         {
@@ -322,7 +322,7 @@ public class ItemRenderer
         {
             ItemStack itemstack = abstractclientplayer.getActiveItemStack();
 
-            if (itemstack.getItem() instanceof net.minecraft.item.ItemBow)
+            if (!itemstack.isEmpty() && itemstack.getItem() == Items.BOW) //Forge: Data watcher can desync and cause this to NPE...
             {
                 EnumHand enumhand1 = abstractclientplayer.getActiveHand();
                 flag = enumhand1 == EnumHand.MAIN_HAND;
@@ -476,7 +476,7 @@ public class ItemRenderer
             if (iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE)
             {
                 if (!net.minecraftforge.event.ForgeEventFactory.renderBlockOverlay(mc.player, partialTicks, net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType.BLOCK, iblockstate, overlayPos))
-                this.renderBlockInHand(this.mc.getBlockRendererDispatcher().getBlockModelShapes().getTexture(iblockstate));
+                this.renderSuffocationOverlay(this.mc.getBlockRendererDispatcher().getBlockModelShapes().getTexture(iblockstate));
             }
         }
 
@@ -499,9 +499,9 @@ public class ItemRenderer
     }
 
     /**
-     * Render the block in the player's hand
+     * Renders the given sprite over the player's view
      */
-    private void renderBlockInHand(TextureAtlasSprite sprite)
+    private void renderSuffocationOverlay(TextureAtlasSprite sprite)
     {
         this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         Tessellator tessellator = Tessellator.getInstance();

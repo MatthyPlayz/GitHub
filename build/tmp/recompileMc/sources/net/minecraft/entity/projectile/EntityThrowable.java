@@ -32,7 +32,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
     protected boolean inGround;
     public int throwableShake;
     /** The entity that threw this throwable item. */
-    protected EntityLivingBase thrower;
+    private EntityLivingBase thrower;
     private String throwerName;
     private int ticksInGround;
     private int ticksInAir;
@@ -260,8 +260,9 @@ public abstract class EntityThrowable extends Entity implements IProjectile
             {
                 this.setPortal(raytraceresult.getBlockPos());
             }
-            else if (!net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
+            else
             {
+                if(!net.minecraftforge.common.ForgeHooks.onThrowableImpact(this, raytraceresult))
                 this.onImpact(raytraceresult);
             }
         }

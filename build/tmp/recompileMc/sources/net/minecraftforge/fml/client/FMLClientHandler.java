@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,7 +16,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
 package net.minecraftforge.fml.client;
 
 import java.io.File;
@@ -33,7 +32,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -53,7 +51,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.AbstractResourcePack;
 import net.minecraft.client.resources.FallbackResourceManager;
 import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.LegacyV2Adapter;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
@@ -83,12 +80,7 @@ import net.minecraft.util.StringUtils;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.storage.WorldSummary;
 import net.minecraft.world.storage.SaveFormatOld;
-import net.minecraftforge.client.CloudRenderer;
-import net.minecraftforge.client.IRenderHandler;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.resource.IResourceType;
-import net.minecraftforge.client.resource.ReloadRequirements;
-import net.minecraftforge.client.resource.SelectiveReloadStateHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.util.CompoundDataFixer;
@@ -118,7 +110,6 @@ import net.minecraftforge.registries.GameData;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.FormattedMessage;
 import org.lwjgl.LWJGLUtil;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -138,7 +129,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -179,13 +169,19 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     private DummyModContainer optifineContainer;
 
-    @Deprecated // TODO remove in 1.13. mods are referencing this to get around client-only dependencies in old Forge versions
     private MissingModsException modsMissing;
+
+    private ModSortingException modSorting;
 
     private boolean loading = true;
 
-    @Nullable
-    private IDisplayableError errorToDisplay;
+    private WrongMinecraftVersionException wrongMC;
+
+    private CustomModLoadingErrorDisplayException customError;
+
+    private DuplicateModsFoundException dupesFound;
+
+    private MultipleModsErrored multipleModsErrored;
 
     private boolean serverShouldBeKilledQuietly;
 
@@ -202,8 +198,6 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     private WeakReference<NetHandlerPlayClient> currentPlayClient;
 
-    private CloudRenderer cloudRenderer;
-
     /**
      * Called to start the whole game off
      *
@@ -211,6 +205,7 @@ public class FMLClientHandler implements IFMLSidedHandler
      * @param resourcePackList The resource pack list we will populate with mods
      * @param resourceManager The resource manager
      */
+    @SuppressWarnings("unchecked")
     public void beginMinecraftLoading(Minecraft minecraft, List<IResourcePack> resourcePackList, IReloadableResourceManager resourceManager, MetadataSerializer metaSerializer)
     {
         detectOptifine();
@@ -231,11 +226,30 @@ public class FMLClientHandler implements IFMLSidedHandler
         {
             Loader.instance().loadMods(injectedModContainers);
         }
-        catch (WrongMinecraftVersionException | DuplicateModsFoundException | MissingModsException | ModSortingException | CustomModLoadingErrorDisplayException | MultipleModsErrored e)
+        catch (WrongMinecraftVersionException wrong)
         {
-            FMLLog.log.error("An exception was thrown, the game will display an error screen and halt.", e);
-            errorToDisplay = e;
-            MinecraftForge.EVENT_BUS.shutdown();
+            wrongMC = wrong;
+        }
+        catch (DuplicateModsFoundException dupes)
+        {
+            dupesFound = dupes;
+        }
+        catch (MissingModsException missing)
+        {
+            modsMissing = missing;
+        }
+        catch (ModSortingException sorting)
+        {
+            modSorting = sorting;
+        }
+        catch (CustomModLoadingErrorDisplayException custom)
+        {
+            FMLLog.log.error("A custom exception was thrown by a mod, the game will now halt", custom);
+            customError = custom;
+        }
+        catch (MultipleModsErrored multiple)
+        {
+            multipleModsErrored = multiple;
         }
         catch (LoaderException le)
         {
@@ -251,23 +265,16 @@ public class FMLClientHandler implements IFMLSidedHandler
         {
             Loader.instance().preinitializeMods();
         }
+        catch (CustomModLoadingErrorDisplayException custom)
+        {
+            FMLLog.log.error("A custom exception was thrown by a mod, the game will now halt", custom);
+            customError = custom;
+        }
         catch (LoaderException le)
         {
-            if (le.getCause() instanceof CustomModLoadingErrorDisplayException)
-            {
-                CustomModLoadingErrorDisplayException custom = (CustomModLoadingErrorDisplayException) le.getCause();
-                FMLLog.log.error("A custom exception was thrown by a mod, the game will display an error screen and halt.", custom);
-                errorToDisplay = custom;
-                MinecraftForge.EVENT_BUS.shutdown();
-            }
-            else
-            {
-                haltGame("There was a severe problem during mod loading that has caused the game to fail", le);
-                return;
-            }
+            haltGame("There was a severe problem during mod loading that has caused the game to fail", le);
+            return;
         }
-
-        @SuppressWarnings("unchecked")
         Map<String,Map<String,String>> sharedModList = (Map<String, Map<String, String>>) Launch.blackboard.get("modList");
         if (sharedModList == null)
         {
@@ -316,7 +323,7 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     public boolean hasError()
     {
-        return errorToDisplay != null;
+        return modsMissing != null || wrongMC != null || customError != null || dupesFound != null || modSorting != null || multipleModsErrored != null;
     }
 
     /**
@@ -335,26 +342,22 @@ public class FMLClientHandler implements IFMLSidedHandler
         {
             Loader.instance().initializeMods();
         }
+        catch (CustomModLoadingErrorDisplayException custom)
+        {
+            FMLLog.log.error("A custom exception was thrown by a mod, the game will now halt", custom);
+            customError = custom;
+            SplashProgress.finish();
+            return;
+        }
         catch (LoaderException le)
         {
-            if (le.getCause() instanceof CustomModLoadingErrorDisplayException)
-            {
-                CustomModLoadingErrorDisplayException custom = (CustomModLoadingErrorDisplayException) le.getCause();
-                FMLLog.log.error("A custom exception was thrown by a mod, the game will display an error screen and halt.", custom);
-                errorToDisplay = custom;
-                MinecraftForge.EVENT_BUS.shutdown();
-            }
-            else
-            {
-                haltGame("There was a severe problem during mod loading that has caused the game to fail", le);
-                return;
-            }
+            haltGame("There was a severe problem during mod loading that has caused the game to fail", le);
+            return;
         }
 
         // This call is being phased out for performance reasons in 1.12,
         // but we are keeping an option here in case something needs it for a little longer.
         // See https://github.com/MinecraftForge/MinecraftForge/pull/4032
-        // TODO remove in 1.13
         if (Boolean.parseBoolean(System.getProperty("fml.reloadResourcesOnStart", "false")))
         {
             client.refreshResources();
@@ -387,8 +390,7 @@ public class FMLClientHandler implements IFMLSidedHandler
         }
         loading = false;
         client.gameSettings.loadOptions(); //Reload options to load any mod added keybindings.
-        if (!hasError())
-            Loader.instance().loadingComplete();
+        Loader.instance().loadingComplete();
         SplashProgress.finish();
     }
 
@@ -425,10 +427,29 @@ public class FMLClientHandler implements IFMLSidedHandler
         // re-sync TEXTURE_2D, splash screen disables it with a direct GL call
         GlStateManager.disableTexture2D();
         GlStateManager.enableTexture2D();
-        if (errorToDisplay != null)
+        if (wrongMC != null)
         {
-            GuiScreen errorScreen = errorToDisplay.createGui();
-            showGuiScreen(errorScreen);
+            showGuiScreen(new GuiWrongMinecraft(wrongMC));
+        }
+        else if (modsMissing != null)
+        {
+            showGuiScreen(new GuiModsMissing(modsMissing));
+        }
+        else if (dupesFound != null)
+        {
+            showGuiScreen(new GuiDupesFound(dupesFound));
+        }
+        else if (modSorting != null)
+        {
+            showGuiScreen(new GuiSortingProblem(modSorting));
+        }
+        else if (customError != null)
+        {
+            showGuiScreen(new GuiCustomModLoadingErrorScreen(customError));
+        }
+        else if (multipleModsErrored != null)
+        {
+            showGuiScreen(new GuiMultipleModsErrored(multipleModsErrored));
         }
         else
         {
@@ -583,10 +604,6 @@ public class FMLClientHandler implements IFMLSidedHandler
         return client.getIntegratedServer();
     }
 
-    /**
-     * TODO remove in 1.13
-     */
-    @Deprecated
     public void displayMissingMods(Object modMissingPacket)
     {
 //        showGuiScreen(new GuiModsMissingForServer(modMissingPacket));
@@ -646,12 +663,11 @@ public class FMLClientHandler implements IFMLSidedHandler
             }
             catch (NoSuchMethodException e)
             {
-                FMLLog.log.error("The container {} (type {}) returned an invalid class for its resource pack.", container.getName(), container.getClass().getName());
+                FMLLog.log.error("The container {} (type {}) returned an invalid class for it's resource pack.", container.getName(), container.getClass().getName());
             }
             catch (Exception e)
             {
-                FormattedMessage message = new FormattedMessage("An unexpected exception occurred constructing the custom resource pack for {} ({})", container.getName(), container.getModId());
-                throw new RuntimeException(message.getFormattedMessage(), e);
+                throw new RuntimeException("An unexpected exception occurred constructing the custom resource pack for " + container.getName(), e);
             }
         }
     }
@@ -670,7 +686,13 @@ public class FMLClientHandler implements IFMLSidedHandler
     @Override
     public void serverStopped()
     {
-        GameData.revertToFrozen();
+        // If the server crashes during startup, it might hang the client - reset the client so it can abend properly.
+        MinecraftServer server = getServer();
+
+        if (server != null && !server.serverIsInRunLoop())
+        {
+//            ObfuscationReflectionHelper.setPrivateValue(MinecraftServer.class, server, true, "field_71296"+"_Q","serverIs"+"Running");
+        }
     }
 
     @Override
@@ -700,7 +722,7 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     public File getSavesDir()
     {
-        return new File(client.mcDataDir, "saves");
+        return new File(client.gameDir, "saves");
     }
     public void tryLoadExistingWorld(GuiWorldSelection selectWorldGUI, WorldSummary comparator)
     {
@@ -781,8 +803,7 @@ public class FMLClientHandler implements IFMLSidedHandler
             }
 
             Map<String,String> modListMap = modListBldr.build();
-            String modRejections = FMLNetworkHandler.checkModList(modListMap, Side.SERVER);
-            serverDataTag.put(data, new ExtendedServerListData(type, modRejections == null, modListMap, !moddedClientAllowed));
+            serverDataTag.put(data, new ExtendedServerListData(type, FMLNetworkHandler.checkModList(modListMap, Side.SERVER) == null, modListMap, !moddedClientAllowed));
         }
         else
         {
@@ -792,7 +813,7 @@ public class FMLClientHandler implements IFMLSidedHandler
             {
                 moddedClientAllowed = !serverDescription.endsWith(":NOFML?r");
             }
-            serverDataTag.put(data, new ExtendedServerListData("VANILLA", false, ImmutableMap.of(), !moddedClientAllowed));
+            serverDataTag.put(data, new ExtendedServerListData("VANILLA", false, ImmutableMap.<String,String>of(), !moddedClientAllowed));
         }
         startupConnectionData.countDown();
     }
@@ -936,18 +957,18 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     public void trackMissingTexture(ResourceLocation resourceLocation)
     {
-        badTextureDomains.add(resourceLocation.getResourceDomain());
-        missingTextures.put(resourceLocation.getResourceDomain(),resourceLocation);
+        badTextureDomains.add(resourceLocation.getNamespace());
+        missingTextures.put(resourceLocation.getNamespace(),resourceLocation);
     }
 
     public void trackBrokenTexture(ResourceLocation resourceLocation, String error)
     {
-        badTextureDomains.add(resourceLocation.getResourceDomain());
-        Set<ResourceLocation> badType = brokenTextures.get(resourceLocation.getResourceDomain(), error);
+        badTextureDomains.add(resourceLocation.getNamespace());
+        Set<ResourceLocation> badType = brokenTextures.get(resourceLocation.getNamespace(), error);
         if (badType == null)
         {
             badType = Sets.newHashSet();
-            brokenTextures.put(resourceLocation.getResourceDomain(), MoreObjects.firstNonNull(error, "Unknown error"), badType);
+            brokenTextures.put(resourceLocation.getNamespace(), MoreObjects.firstNonNull(error, "Unknown error"), badType);
         }
         badType.add(resourceLocation);
     }
@@ -958,10 +979,10 @@ public class FMLClientHandler implements IFMLSidedHandler
         {
             return;
         }
-        Logger logger = LogManager.getLogger("FML.TEXTURE_ERRORS");
+        Logger logger = LogManager.getLogger("TEXTURE ERRORS");
         logger.error(Strings.repeat("+=", 25));
         logger.error("The following texture errors were found.");
-        Map<String,FallbackResourceManager> resManagers = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, (SimpleReloadableResourceManager)Minecraft.getMinecraft().getResourceManager(), "field_110548"+"_a");
+        Map<String,FallbackResourceManager> resManagers = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, (SimpleReloadableResourceManager)Minecraft.getMinecraft().getResourceManager(), "domainResourceManagers", "field_110548"+"_a");
         for (String resourceDomain : badTextureDomains)
         {
             Set<ResourceLocation> missing = missingTextures.get(resourceDomain);
@@ -976,7 +997,7 @@ public class FMLClientHandler implements IFMLSidedHandler
             }
             else
             {
-                List<IResourcePack> resPacks = ObfuscationReflectionHelper.getPrivateValue(FallbackResourceManager.class, fallbackResourceManager, "field_110540"+"_a");
+                List<IResourcePack> resPacks = ObfuscationReflectionHelper.getPrivateValue(FallbackResourceManager.class, fallbackResourceManager, "resourcePacks","field_110540"+"_a");
                 logger.error("    domain {} has {} location{}:",resourceDomain, resPacks.size(), resPacks.size() != 1 ? "s" :"");
                 for (IResourcePack resPack : resPacks)
                 {
@@ -988,7 +1009,7 @@ public class FMLClientHandler implements IFMLSidedHandler
                     else if (resPack instanceof AbstractResourcePack)
                     {
                         AbstractResourcePack resourcePack = (AbstractResourcePack) resPack;
-                        File resPath = ObfuscationReflectionHelper.getPrivateValue(AbstractResourcePack.class, resourcePack, "field_110597"+"_b");
+                        File resPath = ObfuscationReflectionHelper.getPrivateValue(AbstractResourcePack.class, resourcePack, "resourcePackFile","field_110597"+"_b");
                         logger.error("      resource pack at path {}",resPath.getPath());
                     }
                     else
@@ -1001,7 +1022,7 @@ public class FMLClientHandler implements IFMLSidedHandler
             if (missingTextures.containsKey(resourceDomain)) {
                 logger.error("    The missing resources for domain {} are:", resourceDomain);
                 for (ResourceLocation rl : missing) {
-                    logger.error("      {}", rl.getResourcePath());
+                    logger.error("      {}", rl.getPath());
                 }
                 logger.error(Strings.repeat("-", 25));
             }
@@ -1019,7 +1040,7 @@ public class FMLClientHandler implements IFMLSidedHandler
                     logger.error("    Problem: {}", error);
                     for (ResourceLocation rl : resourceErrs.get(error))
                     {
-                        logger.error("      {}",rl.getResourcePath());
+                        logger.error("      {}",rl.getPath());
                     }
                 }
             }
@@ -1085,57 +1106,5 @@ public class FMLClientHandler implements IFMLSidedHandler
     {
         this.client.populateSearchTreeManager();
         this.client.getSearchTreeManager().onResourceManagerReload(this.client.getResourceManager());
-    }
-
-    @Override
-    public void reloadCreativeSettings()
-    {
-        this.client.creativeSettings.read();
-    }
-
-    private CloudRenderer getCloudRenderer()
-    {
-        if (cloudRenderer == null)
-            cloudRenderer = new CloudRenderer();
-        return cloudRenderer;
-    }
-
-    public void updateCloudSettings()
-    {
-        getCloudRenderer().checkSettings();
-    }
-
-    public boolean renderClouds(int cloudTicks, float partialTicks)
-    {
-        IRenderHandler renderer = this.client.world.provider.getCloudRenderer();
-        if (renderer != null)
-        {
-            renderer.render(partialTicks, this.client.world, this.client);
-            return true;
-        }
-        return getCloudRenderer().render(cloudTicks, partialTicks);
-    }
-
-    public void refreshResources(IResourceType... inclusion)
-    {
-        this.refreshResources(ReloadRequirements.include(inclusion));
-    }
-
-    // Wrapper around the existing refreshResources with given reload predicates
-    public void refreshResources(Predicate<IResourceType> resourcePredicate)
-    {
-        SelectiveReloadStateHandler.INSTANCE.beginReload(resourcePredicate);
-        this.client.refreshResources();
-        SelectiveReloadStateHandler.INSTANCE.endReload();
-    }
-
-    public ListenableFuture<Object> scheduleResourcesRefresh(IResourceType... inclusion)
-    {
-        return this.scheduleResourcesRefresh(ReloadRequirements.include(inclusion));
-    }
-
-    public ListenableFuture<Object> scheduleResourcesRefresh(Predicate<IResourceType> resourcePredicate)
-    {
-        return this.client.addScheduledTask(() -> this.refreshResources(resourcePredicate));
     }
 }
